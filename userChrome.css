@@ -1,0 +1,276 @@
+/* Hawtbrowser: custom style sheet to make Firefox look similar
+ * to Qutebrowser, by Ian LeCorbeau. This is meant to be used with
+ * the Vimium-ff add-on.
+ *
+ * Extra credits to MyOtherGuy and lr-tech.
+ * */
+
+:root {
+    --uc-bottom-toolbar-height: 28px !important; /* Height of tool bar/url bar */
+    --tab-block-margin: 0 !important;
+    --tab-border-radius: 0 !important;
+    --tab-min-height: 32px !important; /* Height of tab bar */
+}
+
+#browser,
+#customization-container {
+    margin-bottom: var(--uc-bottom-toolbar-height, 0px);
+}
+
+/* Nav bar */
+
+/*Hidden content */
+#navigator-toolbox #list-all-tabs-button,
+#navigator-toolbox .list-all-tabs-button,
+#navigator-toolbox #list-tabs-buttons,
+#navigator-toolbox .list-tabs-buttons,
+#navigator-toolbox #tabs-newtab-button,
+#navigator-toolbox .tabs-newtab-button,
+#navigator-toolbox #toolbar-menubar,
+#navigator-toolbox #home-button,
+#navigator-toolbox #reload-button,
+#navigator-toolbox #back-button,
+#navigator-toolbox #forward-button,
+#navigator-toolbox .tab-close-button,
+#navigator-toolbox #pageActionSeparator,
+#navigator-toolbox #pageActionButton {
+    display: none !important;
+}
+
+/* Nav bar */
+
+#navigator-toolbox {
+    border: 0px !important;
+    max-height: var(--tab-min-height) !important;
+}
+
+#nav-bar {
+    background: none !important;
+    box-shadow: none !important;
+    position: fixed !important;
+    bottom: 0px !important;
+    display: -webkit-box;
+    height: var(--uc-bottom-toolbar-height) !important;
+    width: 100% !important;
+    z-index: 1000 !important;
+}
+
+#nav-bar .toolbarbutton-icon {
+    width: 20px !important;
+    padding-left: 2px !important;
+    padding-right: 2px !important;
+    margin: -5px 0px 0px 0px !important;
+}
+
+#nav-bar .toolbarbutton-badge {
+    margin-inline-end: 0 !important;
+    padding: 0px 1px 1px 0px !important;
+    min-width: 6px !important;
+}
+
+#nav-bar-overflow-button {
+    margin: 3px 0px 0px !important;
+    min-height: 25px !important;
+    padding: 0px 0px 5px 0px !important;
+}
+
+#PanelUI-button {
+    display: block !important;
+    margin: 0px 0px 0px 0px !important;
+    border-left: none !important;
+}
+
+#PanelUI-menu-button {
+    padding-left: 0 !important;
+    padding-right: 1px !important;
+}
+
+#nav-bar-customization-target {
+    -webkit-box-flex: 5;
+}
+
+#TabsToolbar,
+#tabbrowser-tabs,
+#TabsToolbar-customization-target,
+.tabbrowser-tab,
+.tab-stack,
+.tab-background,
+.tab-content {
+    min-height: var(--tab-min-height) !important;
+    height: var(--tab-min-height) !important;
+}
+
+/* Tabs */
+
+#tabbrowser-tabs {
+    counter-reset: tab-counter;
+}
+
+.tabbrowser-tab {
+    border: none !important;
+    height: var(--tab-min-height) !important;
+    font-size: 15px !important;
+    counter-increment: tab-counter;
+}
+
+.tabbrowser-tab .tab-content {
+    height: 100% !important;
+    align-items: center !important;
+    padding-block: 0 !important;
+}
+
+.tab-label-container,
+.tab-label {
+    line-height: 1.2 !important;
+}
+
+.tabbrowser-tab .tab-content::before {
+    content: counter(tab-counter);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 16px;
+    height: 18px;
+    margin-right: 6px;
+    padding: 0 4px;
+    border-radius: 3px;
+    background-color: #f2c94c;
+    color: #1f1f1f;
+    font-size: 11px;
+    line-height: 1;
+}
+
+.tabbrowser-tab[selected] {
+    border: none !important;
+    height: var(--tab-min-height) !important;
+    font-size: 12px !important;
+    background-color: #242424 !important;
+}
+
+.tabbrowser-tab[fadein]:not([pinned]) {
+    max-width: 100vw !important;
+    padding-left: 0 !important;
+    padding-inline: 0px !important;
+}
+
+.tabbrowser-tab::after {
+    visibility: hidden !important;
+}
+
+.tab-line[selected="true"] {
+    height: 0px !important;
+}
+
+.tab-background[selected] {
+    background-image: none !important;
+}
+
+.tabbrowser-tab:not([selected]) {
+    font-size: 12px !important;
+    color: #eeeeee !important; /* Change this to a dark color if using a light theme */
+    background-color: #323232 !important; /* Might want to disable that if not using FF's dark theme */
+}
+
+.tab-icon-image {
+    width: 12px !important;
+    height: 12px !important;
+}
+
+.tab:not([selected]) .tab-icon-image {
+    width: 12px !important;
+    height: 12px !important;
+}
+
+/* Url bar */
+
+toolbox toolbarspring {
+    -moz-box-flex: 0 !important;
+}
+
+#urlbar {
+    min-height: var(--uc-bottom-toolbar-height) !important;
+    font-size: 12px !important;
+    margin-left: 0px !important;
+}
+
+#urlbar-background {
+    border: none !important;
+    box-shadow: none !important;
+}
+
+#urlbar[breakout][breakout-extend] {
+    display: block !important;
+    top: auto !important;
+    bottom: 0 !important;
+    height: var(--uc-bottom-toolbar-height) !important;
+    min-height: var(--uc-bottom-toolbar-height) !important;
+    z-index: 1001 !important;
+}
+
+#urlbar[breakout][breakout-extend] > #urlbar-input-container {
+    position: relative !important;
+    z-index: 2 !important;
+    height: var(--uc-bottom-toolbar-height) !important;
+    min-height: var(--uc-bottom-toolbar-height) !important;
+}
+
+#urlbar[breakout][breakout-extend] > .urlbarView {
+    position: absolute !important;
+    top: auto !important;
+    bottom: var(--uc-bottom-toolbar-height) !important;
+    width: 100% !important;
+    z-index: 1 !important;
+    background: var(--arrowpanel-background, #42414d) !important;
+    border: 1px solid var(--arrowpanel-border-color, #5b5968) !important;
+    border-radius: 8px 8px 0 0 !important;
+    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.25) !important;
+    overflow: hidden !important;
+}
+
+.urlbarView-row,
+.urlbarView-row-inner,
+.urlbarView-no-wrap {
+    background: transparent !important;
+}
+
+.urlbarView-body-inner {
+    border-top-style: none !important;
+}
+
+#urlbar:not(:hover):not([breakout][breakout-extend]) > #urlbar-background {
+    box-shadow: none !important;
+    background: none !important;
+}
+
+#tracking-protection-icon-container {
+    padding: 2px 0px 2px 0px !important;
+    margin: 1px 0px 1px 0px !important;
+}
+
+#identity-box {
+    padding: 2px 0px 2px 0px !important;
+    margin: 1px 0px 1px 0px !important;
+}
+
+/* Hiding some url bar elements when not active. Credits to lr-tech on Github */
+
+#urlbar-searchmode-switcher,
+.urlbar-searchmode-switcher,
+#searchmode-switcher,
+.searchmode-switcher {
+    display: none !important;
+}
+
+.urlbar-icon,
+#userContext-indicator,
+#userContext-label {
+    fill: transparent !important;
+    background: transparent !important;
+    color: transparent !important;
+}
+
+#urlbar:hover .urlbar-icon,
+#urlbar:active .urlbar-icon,
+#urlbar[focused] .urlbar-icon {
+    fill: transparent !important;
+}

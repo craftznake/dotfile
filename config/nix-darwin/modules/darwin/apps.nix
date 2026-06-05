@@ -15,6 +15,7 @@
     taps = [
       "nikitabobko/tap"
       "FelixKratz/formulae"
+      "sozercan/repo"
     ];
 
     # `brew install`
@@ -57,6 +58,7 @@
       "zen"
       "finicky"
       "ghostty"
+        "kaset"
     ];
   };
   programs.zsh.enable = true;

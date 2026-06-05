@@ -1,7 +1,3 @@
-[general]
-live_config_reload = true
-import = ["~/.config/alacritty/themes/gruvbox.toml"]
-
 [colors.selection]
 background = "0x3e4452"
 text = "CellForeground"
@@ -21,11 +17,6 @@ y = 0
 family = "ComicShannsMono Nerd Font"
 style = "Regular"
 
-# [[keyboard.bindings]]
-# chars = "\u0000"
-# key = "Space"
-# mods = "Control"
-
 [scrolling]
 history = 15000
 
@@ -37,11 +28,14 @@ args = ["--login"]
 opacity = 0.8
 blur = true
 option_as_alt = "OnlyLeft"
-decorations = "buttonless"
+dynamic_padding = true
+decorations = "full"
+title = "craftznake"
+dynamic_title = false
 
 [window.padding]
 x = 8
-y = 8
+y = 0
 
 [env]
 TERM = "xterm-256color"
@@ -52,5 +46,57 @@ key = "i"
 mods = "Control"
 chars = "\u001b[105;5u"
 
+# Disable some default key bindings
+[[keyboard.bindings]]
+key = "F"
+mods = "Control|Shift"
+action = "ReceiveChar"
+
+[[keyboard.bindings]]
+key = "B"
+mods = "Control|Shift"
+action = "ReceiveChar"
+
+[[keyboard.bindings]]
+key = "C"
+mods = "Control|Shift"
+action = "ReceiveChar"
+
+[[keyboard.bindings]]
+key = "Space"
+mods = "Control|Shift"
+action = "ReceiveChar"
+
+[[keyboard.bindings]]
+key = "Space"
+mods = "Control|Shift"
+action = "ReceiveChar"
+
+[[keyboard.bindings]]
+key = "W"
+mods = "Command"
+action = "ReceiveChar"
+
+[[keyboard.bindings]]
+key = "T"
+mods = "Command"
+action = "ReceiveChar"
+
+[[keyboard.bindings]]
+key = "N"
+mods = "Command"
+action = "ReceiveChar"
+
+[[keyboard.bindings]]
+key = "F"
+mods = "Command|Control"
+action = "ReceiveChar"
+
 [mouse]
 hide_when_typing = true
+
+[general]
+#:schema https://raw.githubusercontent.com/distinction-dev/alacritty-schema/main/alacritty/reference.json
+
+live_config_reload = true
+import = ["~/.config/alacritty/themes/gruvbox.toml"]
