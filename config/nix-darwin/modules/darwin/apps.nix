@@ -58,7 +58,7 @@
       "zen"
       "finicky"
       "ghostty"
-        "kaset"
+      "kaset"
     ];
   };
   programs.zsh.enable = true;

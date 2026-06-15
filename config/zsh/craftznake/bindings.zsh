@@ -23,8 +23,3 @@ zle -N edit_command_line
 # # Bind Alt+V to the edit_command_line widget
 bindkey -M viins '^[v' edit_command_line  # In insert mode
 bindkey -M vicmd '^[v' edit_command_line   # In command mode
-
-# Register the  project as a Zsh widget
-zle -N project
-bindkey -M viins '^[p' project  # In insert mode
-bindkey -M vicmd '^[p' project  # In command mode
