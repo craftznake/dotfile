@@ -131,6 +131,8 @@ shell = [
   "jj-starship",
   "--no-jj-status",
   "--no-git-status",
+  "--bookmarks-display-limit",
+  "1",
   "--jj-symbol",
   "󱗆 "
 ]

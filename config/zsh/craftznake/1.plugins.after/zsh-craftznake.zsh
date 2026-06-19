@@ -41,3 +41,9 @@ if command -v aws_completer >/dev/null 2>&1; then
     complete -C "$(where aws_completer)" aws
 fi
 
+
+# Register related aws commands suggestions
+if command -v acli >/dev/null 2>&1; then
+    eval "$(acli completion zsh)"
+fi
+

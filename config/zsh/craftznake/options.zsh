@@ -20,6 +20,7 @@ HIST_STAMPS="mm/dd/yyyy"
 # The option is designed for interactive use;
 setopt auto_cd
 setopt AUTO_PUSHD
+setopt EXTENDED_GLOB
 autoload bashcompinit && bashcompinit
 autoload -Uz compinit && compinit
 

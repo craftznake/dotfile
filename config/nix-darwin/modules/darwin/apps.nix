@@ -16,6 +16,7 @@
       "nikitabobko/tap"
       "FelixKratz/formulae"
       "sozercan/repo"
+"atlassian/homebrew-acli"
     ];
 
     # `brew install`
@@ -28,6 +29,7 @@
       "coreutils"
       "displayplacer"
       "docker-buildx"
+        "acli"
       "firefoxpwa"
       "gemini-cli"
       "git-crypt"
@@ -40,6 +42,7 @@
 
     # `brew install --cask`
     casks = [
+      "codex"
       "aerospace"
       "alacritty"
       "aldente"
