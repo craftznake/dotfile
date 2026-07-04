@@ -9,9 +9,7 @@ local autocmd = vim.api.nvim_create_autocmd
 local CraftznakeGroup = augroup("Craftznake", { clear = false })
 local YankGroup = augroup("HighlightYank", {})
 
-function R(name)
-    require("plenary.reload").reload_module(name)
-end
+function R(name) require("plenary.reload").reload_module(name) end
 
 -- Auto highlight next occur of yanked word
 autocmd({ "TextYankPost" }, {
@@ -51,12 +49,7 @@ autocmd("LspAttach", {
         map("i", "<c-k>", vim.lsp.buf.signature_help, "Signature Help")
         map("n", "<leader>vrn", vim.lsp.buf.rename, "[R]e[n]ame")
         map("n", "<leader>D", vim.lsp.buf.type_definition, "Type [D]efinition")
-        map("n", "[d", function()
-            vim.diagnostic.jump({ count = -1, float = true })
-        end, "Previous Diagnostic")
-        map("n", "]d", function()
-            vim.diagnostic.jump({ count = 1, float = true })
-        end, "Next Diagnostic")
-        map("n", "<leader>xq", vim.diagnostic.setloclist, "Set Location List")
+        map("n", "[d", function() vim.diagnostic.jump({ count = -1, float = true }) end, "Previous Diagnostic")
+        map("n", "]d", function() vim.diagnostic.jump({ count = 1, float = true }) end, "Next Diagnostic")
     end,
 })

@@ -29,7 +29,19 @@ require("telescope").setup({
                 ["<C-->"] = actions.select_vertical,
             },
         },
-        layout_strategy = "flex",
+        layout_strategy = "bottom_pane",
+        layout_config = {
+            bottom_pane = {
+                height = 0.4,
+                preview_cutoff = 120,
+                prompt_position = "top",
+            },
+        },
+        sorting_strategy = "ascending",
+        prompt_prefix = "❯ ",
+        selection_caret = "❯ ",
+        entry_prefix = "  ",
+        multi_icon = "✚ ",
         vimgrep_arguments = {
             "rg",
             "--color=never",
@@ -55,17 +67,27 @@ require("telescope").load_extension("file_browser")
 local function apply_highlights()
     local p = theme.palette()
     local hl = vim.api.nvim_set_hl
-    hl(0, "TelescopeBorder",         { fg = p.border,  bg = "none" })
+    hl(0, "TelescopeBorder",         { fg = p.dim,    bg = "none" })
     hl(0, "TelescopeNormal",         { bg = "none" })
-    hl(0, "TelescopePromptNormal",   { bg = p.bg })
-    hl(0, "TelescopePromptBorder",   { fg = p.border,  bg = "none" })
-    hl(0, "TelescopeResultsNormal",  { fg = p.dim,     bg = "none" })
-    hl(0, "TelescopeSelection",      { fg = p.fg,      bg = p.visual_bg })
-    hl(0, "TelescopeSelectionCaret", { fg = p.accent,  bg = p.visual_bg })
-    hl(0, "TelescopeMatching",       { fg = p.accent,  bold = true })
-    hl(0, "TelescopePromptTitle",    { fg = p.fg,      bg = "none" })
-    hl(0, "TelescopeResultsTitle",   { fg = p.fg,      bg = "none" })
-    hl(0, "TelescopePreviewTitle",   { fg = p.fg,      bg = "none" })
+    hl(0, "TelescopePromptNormal",   { bg = "none",   fg = p.accent })
+    hl(0, "TelescopePromptPrefix",   { fg = p.accent, bold = true })
+    hl(0, "TelescopePromptBorder",   { fg = p.dim,    bg = "none" })
+    hl(0, "TelescopeResultsNormal",  { bg = "none" })
+    hl(0, "TelescopeResultsBorder",  { fg = p.dim,    bg = "none" })
+    hl(0, "TelescopePreviewNormal",  { bg = "none" })
+    hl(0, "TelescopePreviewBorder",  { fg = p.dim,    bg = "none" })
+    hl(0, "TelescopeSelection",      { fg = p.fg,     bg = p.visual_bg, bold = true })
+    hl(0, "TelescopeSelectionCaret", { fg = p.accent, bg = p.visual_bg })
+    hl(0, "TelescopeMatching",       { fg = p.accent, bold = true })
+    hl(0, "TelescopeResultsClass",   { fg = p.string_fg })
+    hl(0, "TelescopeResultsStruct",  { fg = p.string_fg })
+    hl(0, "TelescopeResultsFunction",{ fg = p.accent })
+    hl(0, "TelescopeResultsVariable",{ fg = p.fg })
+    hl(0, "TelescopeResultsLineNr",  { fg = p.dim })
+    hl(0, "TelescopeResultsComment", { fg = p.dim,    italic = true })
+    hl(0, "TelescopePromptTitle",    { fg = p.dim,    bg = "none" })
+    hl(0, "TelescopeResultsTitle",   { fg = p.dim,    bg = "none" })
+    hl(0, "TelescopePreviewTitle",   { fg = p.dim,    bg = "none" })
 end
 
 apply_highlights()
