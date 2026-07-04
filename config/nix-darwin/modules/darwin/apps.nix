@@ -16,11 +16,13 @@
       "nikitabobko/tap"
       "FelixKratz/formulae"
       "sozercan/repo"
-"atlassian/homebrew-acli"
+      "atlassian/homebrew-acli"
+      "wxtsky/tap"
     ];
 
     # `brew install`
     brews = [
+      "acli"
       "antidote"
       "aspell"
       "autoconf"
@@ -29,7 +31,6 @@
       "coreutils"
       "displayplacer"
       "docker-buildx"
-        "acli"
       "firefoxpwa"
       "gemini-cli"
       "git-crypt"
@@ -42,26 +43,27 @@
 
     # `brew install --cask`
     casks = [
-      "codex"
       "aerospace"
       "alacritty"
       "aldente"
-      "openkey"
+      "codeisland"
+      "codex"
+      "cursor"
+      "finicky"
       "firefox"
+      "ghostty"
       "homerow"
       "jordanbaird-ice"
       "karabiner-elements"
+      "kaset"
       "middleclick"
       "obsidian"
+      "openkey"
       "raycast"
       "stats"
-      "cursor"
       "wezterm"
       "zed"
       "zen"
-      "finicky"
-      "ghostty"
-      "kaset"
     ];
   };
   programs.zsh.enable = true;
