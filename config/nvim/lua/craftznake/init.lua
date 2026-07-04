@@ -1,6 +1,7 @@
 require("craftznake.set")
 require("craftznake.packages")
 require("craftznake.remap")
+require("craftznake.theme").setup()
 
 local augroup = vim.api.nvim_create_augroup
 local autocmd = vim.api.nvim_create_autocmd
@@ -46,6 +47,7 @@ autocmd("LspAttach", {
         map("n", "gt", vim.lsp.buf.type_definition, "[G]oto [T]ype Definition")
         map("n", "gc", vim.lsp.buf.code_action, "[G]oto [C]ode action")
         map("n", "K", vim.lsp.buf.hover, "Hover Documentation")
+        map("n", "gl", vim.diagnostic.open_float, "Show Diagnostic")
         map("i", "<c-k>", vim.lsp.buf.signature_help, "Signature Help")
         map("n", "<leader>vrn", vim.lsp.buf.rename, "[R]e[n]ame")
         map("n", "<leader>D", vim.lsp.buf.type_definition, "Type [D]efinition")
@@ -55,7 +57,6 @@ autocmd("LspAttach", {
         map("n", "]d", function()
             vim.diagnostic.jump({ count = 1, float = true })
         end, "Next Diagnostic")
-        map("n", "<leader>xe", vim.diagnostic.open_float, "Show Diagnostic")
         map("n", "<leader>xq", vim.diagnostic.setloclist, "Set Location List")
     end,
 })

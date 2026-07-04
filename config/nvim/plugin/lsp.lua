@@ -19,26 +19,26 @@ local servers = {
                 -- Balanced background checks (Flycheck)
                 checkOnSave = {
                     enable = true,
-                    command = "clippy",                          -- Use clippy for more targeted checks
-                    workspace = false,                           -- CRITICAL: Only checks the current package/crate you are editing
-                    allTargets = false,                          -- Drops tests, benchmarks, and examples from background compile
+                    command = "clippy",
+                    workspace = false,
+                    allTargets = false,
                     extraArgs = {
-                        "--target-dir=/tmp/rust-analyzer-check", -- Keeps main target/ directory unlocked
-                        "--no-deps",                             -- Don't check dependencies, only current crate
+                        "--target-dir=/tmp/rust-analyzer-check",
+                        "--no-deps",
                     },
                 },
 
                 -- Cargo project loading settings
                 cargo = {
                     buildScripts = {
-                        enable = true, -- Needed so macros and generated code (like build.rs output) resolve correctly
+                        enable = true,
                     },
-                    features = "all",  -- Ensures autocomplete works across all conditional code blocks
+                    features = "all",
                 },
 
                 -- Macro expansion performance
                 procMacro = {
-                    enable = true, -- Essential for syntax highlighting in crates like Serde/Tokio
+                    enable = true,
                     attributes = {
                         enable = true,
                     },
@@ -213,9 +213,12 @@ blink.setup({
 })
 
 vim.diagnostic.config({
-    virtual_text = true,
+    virtual_text = false,
+    signs = true,
+    underline = true,
+    update_in_insert = false,
     float = {
-        focusable = false,
+        focusable = true,
         style = "minimal",
         border = "rounded",
         source = true,
