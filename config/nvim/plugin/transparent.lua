@@ -1,9 +1,14 @@
 vim.pack.add({ 'https://github.com/xiyaowong/transparent.nvim' })
 
+local theme = require("craftznake.theme")
+
 vim.keymap.set(
     "n",
     "<leader>ut",
-    "<cmd>TransparentToggle<CR>",
+    function()
+        vim.cmd("TransparentToggle")
+        vim.schedule(theme.apply)
+    end,
     { desc = "Toggle transparency", silent = true, noremap = true }
 )
 
@@ -25,5 +30,6 @@ require("transparent").setup({
             "NvimTreeEndOfBuffer",
         },
         exclude_groups = {},
+        on_clear = function() vim.schedule(theme.apply) end,
     },
 })

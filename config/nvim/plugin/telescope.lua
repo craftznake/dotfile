@@ -6,6 +6,7 @@ vim.pack.add({
 })
 
 local actions = require("telescope.actions")
+local theme = require("craftznake.theme")
 
 local function teleFilename(_, path)
     local tail = require("telescope.utils").path_tail(path)
@@ -41,7 +42,7 @@ require("telescope").setup({
     },
     preview = { treesitter = false },
     pickers = {
-        find_files = { 
+        find_files = {
             path_display = teleFilename,
             find_command = { "fd", "--type", "f", "--hidden", "--exclude", ".git" },
         },
@@ -51,31 +52,30 @@ require("telescope").setup({
 require("telescope").load_extension("fzf")
 require("telescope").load_extension("file_browser")
 
+local function apply_highlights()
+    local p = theme.palette()
+    local hl = vim.api.nvim_set_hl
+    hl(0, "TelescopeBorder",         { fg = p.border,  bg = "none" })
+    hl(0, "TelescopeNormal",         { bg = "none" })
+    hl(0, "TelescopePromptNormal",   { bg = p.bg })
+    hl(0, "TelescopePromptBorder",   { fg = p.border,  bg = "none" })
+    hl(0, "TelescopeResultsNormal",  { fg = p.dim,     bg = "none" })
+    hl(0, "TelescopeSelection",      { fg = p.fg,      bg = p.visual_bg })
+    hl(0, "TelescopeSelectionCaret", { fg = p.accent,  bg = p.visual_bg })
+    hl(0, "TelescopeMatching",       { fg = p.accent,  bold = true })
+    hl(0, "TelescopePromptTitle",    { fg = p.fg,      bg = "none" })
+    hl(0, "TelescopeResultsTitle",   { fg = p.fg,      bg = "none" })
+    hl(0, "TelescopePreviewTitle",   { fg = p.fg,      bg = "none" })
+end
+
+apply_highlights()
+theme.register("telescope", apply_highlights)
+
 local builtin = require("telescope.builtin")
 
-vim.keymap.set("n", ";f", function()
-    builtin.find_files()
-end, { desc = "Open [F]iles list" })
-
+vim.keymap.set("n", ";f", function() builtin.find_files() end, { desc = "Open [F]iles list" })
 vim.keymap.set("n", ";r", function() builtin.live_grep() end, { desc = "Open [R]egex" })
 vim.keymap.set("n", ";b", function() builtin.buffers() end, { desc = "Open [B]uffers list" })
-vim.keymap.set("n", ";t", function() builtin.help_tags() end, { desc = "Open [T]ags list" })
 vim.keymap.set("n", ";d", function() builtin.diagnostics({ bufnr = 0 }) end, { desc = "Open [D]iagnostics (buffer)" })
 vim.keymap.set("n", ";D", function() builtin.diagnostics() end, { desc = "Open [D]iagnostics (all)" })
-vim.keymap.set("n", ";s", function() builtin.treesitter() end, { desc = "Open tree[S]itter symbols" })
-
-vim.keymap.set("n", ";g", function()
-    local function telescope_buffer_dir()
-        return vim.fn.expand("%:p:h")
-    end
-    require("telescope").extensions.file_browser.file_browser({
-        path = "%:p:h",
-        cwd = telescope_buffer_dir(),
-        respect_gitignore = false,
-        hidden = true,
-        grouped = true,
-        previewer = false,
-        initial_mode = "normal",
-        layout_config = { height = 40 },
-    })
-end, { desc = "Open File Browser" })
+vim.keymap.set("n", ";;", function() builtin.resume() end, { desc = "Telescope Resume Last Search" })

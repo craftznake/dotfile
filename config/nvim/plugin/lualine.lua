@@ -3,18 +3,18 @@ vim.pack.add({
     'https://github.com/nvim-lualine/lualine.nvim',
 })
 
+local theme = require("craftznake.theme")
+
 local function location()
     return string.format("%3d:%-2d", unpack(vim.api.nvim_win_get_cursor(0)))
 end
-
-local themes = require("craftznake.plugins.consts.themes")
 
 require("lualine").setup({
     options = {
         icons_enabled = true,
         section_separators = "",
         component_separators = "",
-        theme = themes.nil_theme,
+        theme = theme.lualine_theme(),
         always_divide_middle = true,
         disabled_filetypes = {
             statusline = { "TelescopePrompt", "TelescopeResults", "TelescopePreview" },
@@ -62,3 +62,8 @@ require("lualine").setup({
     inactive_winbar = {},
     extensions = {},
 })
+
+theme.register("lualine", function()
+    require("lualine").setup({ options = { theme = theme.lualine_theme() } })
+end)
+

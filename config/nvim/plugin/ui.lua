@@ -7,6 +7,7 @@ vim.pack.add({
     'https://github.com/stevearc/quicker.nvim',
 })
 
+require("quicker").setup()
 require("notify").setup({ timeout = 5000 })
 
 require("fidget").setup()

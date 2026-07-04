@@ -1,6 +1,5 @@
 vim.pack.add({ 'https://github.com/akinsho/bufferline.nvim' })
 
-local highlights = require("rose-pine.plugins.bufferline")
 require("bufferline").setup({
     options = {
         mode = "tabs",
@@ -12,8 +11,8 @@ require("bufferline").setup({
             style = "underline",
         },
     },
-    highlights = highlights,
 })
 
-vim.keymap.set("n", "<Tab>",   "<Cmd>BufferLineCycleNext<CR>", { desc = "Next tab" })
+vim.keymap.set("n", "<Tab>", "<Cmd>BufferLineCycleNext<CR>", { desc = "Next tab" })
 vim.keymap.set("n", "<S-Tab>", "<Cmd>BufferLineCyclePrev<CR>", { desc = "Prev tab" })
+
