@@ -3,7 +3,7 @@ local wezterm = require("wezterm")
 return {
     font = wezterm.font_with_fallback({
         {
-            family = "Comic Code Ligatures",
+            family = "ComicShannsMono Nerd Font",
         },
         {
             family = "Symbols Nerd Font Mono",
