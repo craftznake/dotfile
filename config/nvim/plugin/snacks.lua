@@ -7,22 +7,11 @@ require("snacks").setup({
     notifier = { enabled = true, timeout = 3000 },
     quickfile = { enabled = false },
     statuscolumn = { enabled = false },
+    lazygit = { enabled = false },
     words = { enabled = false },
-    styles = {
-        notification = {
-            wo = { wrap = true },
-        },
-    },
+    styles = { notification = { wo = { wrap = true }, } },
 })
 
 vim.keymap.set("n", "<leader>un", function()
     require("snacks").notifier.hide()
 end, { desc = "Dismiss All Notifications" })
-
-vim.keymap.set("n", "<leader>gg", function()
-    require("snacks").lazygit()
-end, { desc = "Lazygit" })
-
-vim.keymap.set("n", "<leader>gf", function()
-    require("snacks").lazygit.log_file()
-end, { desc = "Lazygit Current File History" })

@@ -4,6 +4,7 @@ vim.pack.add({
     'https://github.com/mason-org/mason.nvim',
     'https://github.com/mason-org/mason-lspconfig.nvim',
     { src = 'https://github.com/saghen/blink.cmp', version = 'v1.8.0' },
+    'https://github.com/maxandron/goplements.nvim'
 })
 
 local servers = {
@@ -225,4 +226,12 @@ vim.diagnostic.config({
         header = "",
         prefix = "",
     },
+})
+
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = "go",
+    once = false,
+    callback = function()
+        require("goplements").setup({})
+    end,
 })

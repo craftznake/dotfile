@@ -5,9 +5,7 @@ vim.pack.add({
 })
 
 require("inc_rename").setup()
-
 require("nvim-surround").setup()
-
 require("mini.pairs").setup({
     modes = { insert = true, command = false, terminal = false },
     skip_next = [=[[%w%%%'%[%"%.%`%$]]=],
