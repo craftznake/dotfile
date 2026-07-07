@@ -1,5 +1,4 @@
 vim.pack.add({ 'https://github.com/laytan/cloak.nvim' })
-
 require("cloak").setup({
     enabled = true,
     cloak_character = "*",
@@ -15,7 +14,6 @@ require("cloak").setup({
         },
     },
 })
-
 require("which-key").add({
     {
         mode = { "n" },
