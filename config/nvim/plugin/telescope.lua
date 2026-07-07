@@ -18,6 +18,7 @@ end
 
 require("telescope").setup({
     defaults = {
+        theme = "ivy",
         file_ignore_patterns = { "vendor/", "node_modules/", "target/" },
         mappings = {
             i = {
@@ -38,7 +39,7 @@ require("telescope").setup({
             },
         },
         sorting_strategy = "ascending",
-        prompt_prefix = "❯ ",
+        prompt_prefix = "$ ",
         selection_caret = "❯ ",
         entry_prefix = "  ",
         multi_icon = "✚ ",
@@ -101,4 +102,3 @@ vim.keymap.set("n", ";b", function() builtin.buffers() end, { desc = "Open [B]uf
 vim.keymap.set("n", ";d", function() builtin.diagnostics({ bufnr = 0 }) end, { desc = "Open [D]iagnostics (buffer)" })
 vim.keymap.set("n", ";D", function() builtin.diagnostics() end, { desc = "Open [D]iagnostics (all)" })
 vim.keymap.set("n", ";;", function() builtin.resume() end, { desc = "Telescope Resume Last Search" })
-
