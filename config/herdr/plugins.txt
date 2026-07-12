@@ -1,0 +1,3 @@
+paulbkim-dev/vim-herdr-navigation
+milkyskies/herdr-attention
+aarsh21/herdr-tab-title

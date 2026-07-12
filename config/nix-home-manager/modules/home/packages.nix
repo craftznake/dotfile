@@ -61,6 +61,7 @@
       terraform
       terraformer
       tmux
+      herdr
       tpack
       tpack
       tree

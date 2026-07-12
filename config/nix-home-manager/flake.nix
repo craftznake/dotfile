@@ -14,13 +14,16 @@
     jj-starship-overlay = {
         url = "github:dmmulroy/jj-starship";
     };
+    herdr = {
+        url = "github:ogulcancelik/herdr";
+    };
     flake-registry = {
       url = "github:nixos/flake-registry";
       flake = false;
     };
   };
 
-  outputs = { nixpkgs, home-manager, rust-overlay, jj-starship-overlay, ... }:
+  outputs = { nixpkgs, home-manager, rust-overlay, jj-starship-overlay, herdr, ... }:
     let
       systems = [ "aarch64-darwin" "x86_64-darwin" "x86_64-linux" "aarch64-linux" ];
       forAllSystems = nixpkgs.lib.genAttrs systems;
@@ -30,6 +33,7 @@
         overlays = [
           rust-overlay.overlays.default
           jj-starship-overlay.overlays.default
+          herdr.overlays.default
           (import ./overlays)
         ];
       };

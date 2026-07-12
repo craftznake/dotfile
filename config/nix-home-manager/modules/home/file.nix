@@ -102,6 +102,14 @@ in
       target = ".config/tmux";
       recursive = true;
     };
+    "herdr_config" = {
+        source = config.lib.file.mkOutOfStoreSymlink "${dotconfigs}/config/herdr/config.toml";
+        target = ".config/herdr/config.toml";
+    };
+    "herdr_plugins" = {
+        source = config.lib.file.mkOutOfStoreSymlink "${dotconfigs}/config/herdr/plugins.txt";
+        target = ".config/herdr/plugins.txt";
+    };
     "alacritty" = {
       source = "${dotconfigs}/config/alacritty";
       target = ".config/alacritty";
@@ -112,6 +120,27 @@ in
     #   target = ".config/fish";
     #   recursive = true;
     # };
+  };
+
+  home.activation = {
+    installHerdrPlugins = config.lib.dag.entryAfter [ "writeBoundary" ] ''
+      export PATH="$HOME/.nix-profile/bin:$PATH"
+
+      if command -v herdr &> /dev/null; then
+        plugins_file="$HOME/.config/herdr/plugins.txt"
+        if [[ -f "$plugins_file" ]]; then
+          while IFS= read -r plugin || [ -n "$plugin" ]; do
+            [[ -z "$plugin" || "$plugin" =~ ^[[:space:]]*# ]] && continue
+            echo "Installing herdr plugin: $plugin"
+            $DRY_RUN_CMD herdr plugin install "$plugin" --yes
+          done < "$plugins_file"
+        else
+          echo "Warning: $plugins_file not found."
+        fi
+      else
+        echo "Warning: herdr command not available in PATH yet."
+      fi
+    '';
   };
 }
 
