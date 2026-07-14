@@ -121,26 +121,5 @@ in
     #   recursive = true;
     # };
   };
-
-  home.activation = {
-    installHerdrPlugins = config.lib.dag.entryAfter [ "writeBoundary" ] ''
-      export PATH="$HOME/.nix-profile/bin:$PATH"
-
-      if command -v herdr &> /dev/null; then
-        plugins_file="$HOME/.config/herdr/plugins.txt"
-        if [[ -f "$plugins_file" ]]; then
-          while IFS= read -r plugin || [ -n "$plugin" ]; do
-            [[ -z "$plugin" || "$plugin" =~ ^[[:space:]]*# ]] && continue
-            echo "Installing herdr plugin: $plugin"
-            $DRY_RUN_CMD herdr plugin install "$plugin" --yes
-          done < "$plugins_file"
-        else
-          echo "Warning: $plugins_file not found."
-        fi
-      else
-        echo "Warning: herdr command not available in PATH yet."
-      fi
-    '';
-  };
 }
 
