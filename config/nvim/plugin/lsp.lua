@@ -65,6 +65,18 @@ local servers = {
         },
     },
     buf_ls = {},
+    bashls = {
+        -- Include zsh in the filetypes list
+        filetypes = { "sh", "bash", "zsh" },
+        settings = {
+            bashls = {
+                -- Tell the server to recognize zsh syntax features
+                bashIde = {
+                    globPattern = "*@(.sh|.inc|.bash|.command|.zshrc|.zsh)"
+                }
+            },
+        },
+    },
     gopls = {
         settings = {
             gofumpt = true,
@@ -229,3 +241,15 @@ vim.diagnostic.config({
 
 
 require("goplements").setup({})
+vim.filetype.add({
+    extension = { zsh = "sh" },
+    filename = { [".zshrc"] = "sh", [".zprofile"] = "sh" },
+})
+
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = "go",
+    once = false,
+    callback = function()
+        require("goplements").setup({})
+    end,
+})
