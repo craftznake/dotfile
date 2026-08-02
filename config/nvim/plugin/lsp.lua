@@ -34,7 +34,6 @@ local servers = {
                     buildScripts = {
                         enable = true,
                     },
-                    features = "all",
                 },
 
                 -- Macro expansion performance
@@ -129,7 +128,7 @@ require("mason-lspconfig").setup({
     automatic_installation = true,
     ensure_installed = ensure_installed,
     handlers = { function(server)
-        local server_opts = servers[server] or {}
+        local server_opts = servers[server] or { mason = true }
         handler(server, server_opts)
     end },
 })
@@ -228,10 +227,5 @@ vim.diagnostic.config({
     },
 })
 
-vim.api.nvim_create_autocmd("FileType", {
-    pattern = "go",
-    once = false,
-    callback = function()
-        require("goplements").setup({})
-    end,
-})
+
+require("goplements").setup({})
