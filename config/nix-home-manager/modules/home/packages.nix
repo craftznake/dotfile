@@ -29,6 +29,7 @@
       eza
       fd
       fzf
+      btop
       git
       go
       golangci-lint

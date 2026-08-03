@@ -226,10 +226,11 @@ blink.setup({
     sources = { default = { "lsp", "omni", "path", "snippets" } },
 })
 
+-- Diagnostics keep running in the background, but nothing is drawn on screen:
 vim.diagnostic.config({
     virtual_text = false,
-    signs = true,
-    underline = true,
+    signs = false,
+    underline = false,
     update_in_insert = false,
     float = {
         focusable = true,
@@ -241,6 +242,19 @@ vim.diagnostic.config({
     },
 })
 
+-- Pull diagnostics into the quickfix list on demand (diagnostics are always
+-- up to date since the LSP keeps computing them in the background).
+vim.api.nvim_create_user_command("Diag", function()
+    vim.diagnostic.setqflist({ open = true, bufnr = 0, title = "Diagnostics (buffer)" })
+end, { desc = "Pull current buffer diagnostics into quickfix" })
+
+vim.api.nvim_create_user_command("DiagAll", function()
+    vim.diagnostic.setqflist({ open = true, title = "Diagnostics (all buffers)" })
+end, { desc = "Pull diagnostics for all buffers into quickfix" })
+
+-- <leader>x is the "diagnostics/quickfix" group (see 00-whichkey.lua)
+vim.keymap.set("n", "<leader>xq", "<cmd>Diag<CR>", { desc = "[Q]uickfix diagnostics (buffer)" })
+vim.keymap.set("n", "<leader>xQ", "<cmd>DiagAll<CR>", { desc = "Quickfix diagnostics (all buffers)" })
 
 require("goplements").setup({})
 vim.filetype.add({

@@ -1,6 +1,8 @@
 vim.g.mapleader = " "
 vim.opt.guicursor = "a:blinkon0-block"
 
+-- vim.opt.nu = true
+-- vim.opt.rnu = true
 vim.opt.mouse = "a"
 vim.opt.expandtab = true
 vim.opt.softtabstop = 4
@@ -80,9 +82,6 @@ else
     vim.opt.colorcolumn = "80"
 end
 vim.opt.cursorline = true
--- Re-apply CursorLine on every colorscheme change; otherwise loading the
--- colorscheme (later, in packages.lua) resets all highlight groups and wipes
--- this out.
 local function apply_cursorline()
     vim.api.nvim_set_hl(0, "CursorLine", { bg = "#3f2e21" })
 end
