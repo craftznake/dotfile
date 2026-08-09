@@ -14,16 +14,10 @@
 
   home = {
     packages = with pkgs; [
-      (rust-bin.stable.latest.default.override {
-        extensions = [ "rust-src" "rust-analyzer" "clippy" "rustfmt" "llvm-tools-preview" ];
-      })
-      amp-cli
-      ascii-image-converter
-      atuin
+      (rust-bin.stable.latest.default.override { extensions = [ "rust-src" "rust-analyzer" "clippy" "rustfmt" "llvm-tools-preview" ]; })
       awscli2
       bat
       bazel-buildtools
-      bazel_7
       bazelisk
       buf
       colima
@@ -40,18 +34,20 @@
       golangci-lint
       gopls
       gotools
+      herdr
+      istioctl
       jj-starship
+      jq
       jujutsu
-      krabby
+      k9s
+      kind
       kubectl
       lazygit
       lua-language-server
-      minikube
       mise
       mpv
       neovim
       nodejs_24
-      protobuf
       protobuf
       protoc-gen-go
       protoc-gen-go-grpc
@@ -61,19 +57,15 @@
       terraform
       terraformer
       tmux
-      herdr
-      tpack
       tpack
       tree
       tree-sitter
       uutils-coreutils-noprefix
+      watchman
       wdiff
       websocat
       wget
       write-good
-      youtube-tui
-      yt-dlp
-      watchman
       yq
       zig
       zoxide
