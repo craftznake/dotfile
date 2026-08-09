@@ -71,3 +71,11 @@ vim.g.netrw_browse_split = 0
 vim.g.netrw_banner = 0
 vim.g.netrw_winsize = 25
 vim.g.lazyvim_check_order = false
+
+-- "Zen" mode: strip the extra visual component.
+if require("craftznake.plugins.mode").is_zen() then
+    vim.opt.ruler = false
+    vim.opt.signcolumn = "no"
+    vim.opt.colorcolumn = ""
+    vim.opt.rnu = false
+end

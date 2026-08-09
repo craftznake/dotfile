@@ -1,3 +1,5 @@
+if require("craftznake.plugins.mode").is_zen() then return end
+
 vim.pack.add({ 'https://github.com/folke/snacks.nvim' })
 
 ---@diagnostic disable-next-line: missing-fields

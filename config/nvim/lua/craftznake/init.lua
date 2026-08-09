@@ -1,7 +1,8 @@
 require("craftznake.set")
-require("craftznake.packages")
 require("craftznake.remap")
 require("craftznake.theme").setup()
+require("craftznake.plugins.mode").setup()
+require("craftznake.packages")
 
 local augroup = vim.api.nvim_create_augroup
 local autocmd = vim.api.nvim_create_autocmd

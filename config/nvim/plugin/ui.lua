@@ -1,3 +1,5 @@
+if require("craftznake.plugins.mode").is_zen() then return end
+
 vim.pack.add({
     'https://github.com/rcarriga/nvim-notify',
     { src = 'https://github.com/j-hui/fidget.nvim', version = 'v1.6.1' },

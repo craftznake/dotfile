@@ -1,3 +1,5 @@
+if require("craftznake.plugins.mode").is_zen() then return end
+
 vim.pack.add({
     'https://github.com/nvim-lua/plenary.nvim',
     { src = 'https://github.com/ThePrimeagen/harpoon', version = 'harpoon2' },

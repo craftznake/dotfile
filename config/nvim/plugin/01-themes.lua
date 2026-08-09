@@ -1,3 +1,5 @@
+if require("craftznake.plugins.mode").is_zen() then return end
+
 vim.pack.add({
     { src = 'https://github.com/rose-pine/neovim', name = 'rose-pine' },
     'https://github.com/navarasu/onedark.nvim',
@@ -25,4 +27,3 @@ require("themery").setup({
         { name = "gruvbox",         colorscheme = "gruvbox" },
     },
 })
-

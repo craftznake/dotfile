@@ -1,3 +1,5 @@
+if require("craftznake.plugins.mode").is_zen() then return end
+
 vim.pack.add({
     'https://github.com/onsails/lspkind.nvim',
     'https://github.com/neovim/nvim-lspconfig',
@@ -253,3 +255,4 @@ vim.api.nvim_create_autocmd("FileType", {
         require("goplements").setup({})
     end,
 })
+
