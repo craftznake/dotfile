@@ -5,10 +5,8 @@ vim.pack.add({
     { src = 'https://github.com/j-hui/fidget.nvim', version = 'v1.6.1' },
     'https://github.com/echasnovski/mini.animate',
     'https://github.com/shellRaining/hlchunk.nvim',
-    'https://github.com/stevearc/quicker.nvim',
 })
 
-require("quicker").setup()
 require("notify").setup({ timeout = 5000 })
 require("fidget").setup()
 require("mini.animate").setup({ scroll = { enable = false } })

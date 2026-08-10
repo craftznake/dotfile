@@ -1,5 +1,3 @@
-if require("craftznake.plugins.mode").is_zen() then return end
-
 vim.pack.add({ 'https://github.com/laytan/cloak.nvim' })
 require("cloak").setup({
     enabled = true,
@@ -22,4 +20,3 @@ require("which-key").add({
         { "<leader>tc", "<cmd>CloakToggle<cr>", desc = "[T]oggle [C]loak", noremap = true, silent = true },
     },
 })
-

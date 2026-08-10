@@ -94,3 +94,4 @@ vim.api.nvim_create_user_command("FormatStatus", function()
     local global_status = vim.g.conform_format and "enabled" or "disabled"
     print("🐶Autoformat:\nstatus: " .. global_status)
 end, { desc = "Get current format status" })
+

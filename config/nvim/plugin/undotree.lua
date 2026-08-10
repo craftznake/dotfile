@@ -1,5 +1,3 @@
-if require("craftznake.plugins.mode").is_zen() then return end
-
 vim.pack.add({ 'https://github.com/mbbill/undotree' })
 
 require("which-key").add({
@@ -8,3 +6,4 @@ require("which-key").add({
         { "<leader>tu", vim.cmd.UndotreeToggle, desc = "[U]ndo Tree", noremap = true, silent = true },
     },
 })
+

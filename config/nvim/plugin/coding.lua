@@ -1,5 +1,3 @@
-if require("craftznake.plugins.mode").is_zen() then return end
-
 vim.pack.add({
     'https://github.com/smjonas/inc-rename.nvim',
     'https://github.com/kylechui/nvim-surround',
@@ -15,3 +13,4 @@ require("mini.pairs").setup({
     skip_unbalanced = true,
     markdown = true,
 })
+

@@ -77,5 +77,6 @@ if require("craftznake.plugins.mode").is_zen() then
     vim.opt.ruler = false
     vim.opt.signcolumn = "no"
     vim.opt.colorcolumn = ""
+    vim.opt.nu = false
     vim.opt.rnu = false
 end

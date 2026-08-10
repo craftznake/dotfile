@@ -1,5 +1,3 @@
-if require("craftznake.plugins.mode").is_zen() then return end
-
 vim.pack.add({
     'https://github.com/nvim-lua/plenary.nvim',
     { src = 'https://github.com/ThePrimeagen/harpoon', version = 'harpoon2' },
@@ -18,3 +16,4 @@ vim.keymap.set("n", "<leader>r1", function() harpoon:list():replace_at(1) end)
 vim.keymap.set("n", "<leader>r2", function() harpoon:list():replace_at(2) end)
 vim.keymap.set("n", "<leader>r3", function() harpoon:list():replace_at(3) end)
 vim.keymap.set("n", "<leader>r4", function() harpoon:list():replace_at(4) end)
+
