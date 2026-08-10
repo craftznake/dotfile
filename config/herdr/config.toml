@@ -3,15 +3,10 @@ onboarding = false
 # Place this file at ~/.config/herdr/config.toml
 
 [theme]
-# Built-in themes: catppuccin, terminal, tokyo-night, dracula, nord,
-#                  gruvbox, one-dark, solarized, kanagawa, rose-pine,
-#                  vesper
 name = "gruvbox"
-
 auto_switch = false
 
 [terminal]
-# Open new tabs and panes in the current directory (matches tmux -c "#{pane_current_path}")
 new_cwd = "follow"
 
 [update]
@@ -22,12 +17,14 @@ channel = "stable"
 prefix = "ctrl+space"
 
 # Tmux-style
+detach = "prefix+d"
 split_vertical = "prefix+%"
 split_horizontal = "prefix+\""
 new_tab = "prefix+c"
 new_workspace = "prefix+shift+n"
 rename_tab = "prefix+,"
 rename_workspace = "prefix+$"
+switch_tab = "prefix+1..9"  # Ensures window switching matches base-index 1 behavior
 
 # Disable unused key
 focus_pane_down = ""
@@ -37,7 +34,7 @@ focus_pane_right = ""
 close_tab = ""
 cycle_pane_next = ""
 cycle_pane_previous = ""
-last_pane = "prefix+o"
+last_pane = "prefix+l"
 navigate_pane_left = ""
 navigate_pane_up = ""
 navigate_pane_right = ""
@@ -46,9 +43,7 @@ swap_pane_left = ""
 swap_pane_right = ""
 swap_pane_down = ""
 swap_pane_up = ""
-
-switch_workspace = "prefix+shift+1..9"
-switch_tab = "prefix+1..9"  # Ensures window switching matches base-index 1 behavior
+switch_workspace = ""
 
 [[keys.command]]
 key = "prefix+a"  # "attention" — change if it collides
@@ -104,3 +99,7 @@ scrollback_limit_bytes = 15000000
 
 [experimental]
 switch_ascii_input_source_in_prefix = true
+kitty_graphics = true
+
+[worktrees]
+directory = "~/.herdr/worktrees"

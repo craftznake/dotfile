@@ -57,6 +57,11 @@ in
       target = ".config/wezterm";
       recursive = true;
     };
+    "ghostty" = {
+      source = "${dotconfigs}/config/ghostty";
+      target = ".config/ghostty";
+      recursive = true;
+    };
     "zsh" = {
       source = "${dotconfigs}/config/zsh";
       target = ".config/zsh";

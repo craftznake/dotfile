@@ -1,0 +1,93 @@
+# Ghostty Configuration
+# Ported from WezTerm craftznake configuration
+# https://ghostty.org/docs/config/reference
+
+################################################################################
+# Font
+# Primary: Comic Code Ligatures, fallback: Symbols Nerd Font Mono
+################################################################################
+
+font-family = Comic Code Ligatures
+font-family = Symbols Nerd Font Mono
+font-size = 15
+
+################################################################################
+# Theme / Colors
+# Equivalent to WezTerm's "Gruvbox Dark (Gogh)"
+################################################################################
+
+theme = Gruvbox Dark
+background-opacity=0.96
+cursor-style=block
+cursor-style-blink=true
+mouse-hide-while-typing=true
+
+################################################################################
+# Window Appearance
+# window-decoration = none is equivalent to WezTerm's window_decorations = "RESIZE"
+# (no title bar chrome, window remains resizable on macOS)
+################################################################################
+
+# window-decoration = none
+window-padding-x = 5
+window-padding-y = 5
+
+# Show tabs in the title bar area (macOS native tab bar)
+macos-titlebar-style = tabs
+
+################################################################################
+# Scrollback
+################################################################################
+
+scrollback-limit = 100000
+
+################################################################################
+# Shell
+################################################################################
+
+command = /bin/zsh -l
+shell-integration-features = no-cursor
+shell-integration=detect
+
+################################################################################
+# Behavior
+# Equivalent to WezTerm's exit_behavior = "Close" (no confirmation on clean exit)
+################################################################################
+
+confirm-close-surface = false
+
+################################################################################
+# Inactive pane dimming
+# Equivalent to WezTerm's inactive_pane_hsb { saturation = 0.9, brightness = 0.4 }
+################################################################################
+
+unfocused-split-opacity = 0.4
+
+################################################################################
+# Key Bindings
+#
+# WezTerm leader: CTRL+ALT+CMD+Space (1000ms timeout)
+# Ghostty supports key sequences with ">", so the same pattern is preserved:
+#   ctrl+alt+super+space > key
+#
+# Features with no direct Ghostty equivalent (noted inline):
+#   - format-tab-title event  → native tab bar only
+#   - update-status event     → no powerline status bar support
+#   - CharSelect              → no built-in character picker
+#   - ActivateCommandPalette  → no command palette
+#   - PaneSelect / ShowLauncherArgs → no fuzzy launcher
+#   - Workspace management    → Ghostty has no workspace concept
+#   - Copy mode (vi-style)    → Ghostty has basic selection, no full vi copy mode
+################################################################################
+
+## Remove all default Ghostty shortcuts
+keybind = clear
+
+# Add back only the shortcuts you want
+keybind = super+c=copy_to_clipboard
+keybind = super+v=paste_from_clipboard
+keybind = super+==increase_font_size:1
+keybind = super+-=decrease_font_size:1
+keybind = super+P=toggle_command_palette
+keybind = global:super+grave_accent=toggle_quick_terminal
+
