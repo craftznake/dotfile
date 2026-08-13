@@ -2,8 +2,6 @@ vim.g.mapleader = " "
 vim.opt.guicursor = "a:blinkon0-block"
 
 vim.opt.mouse = "a"
-vim.opt.nu = true
-vim.opt.rnu = true
 vim.opt.expandtab = true
 vim.opt.softtabstop = 4
 vim.opt.shiftwidth = 4
@@ -30,7 +28,6 @@ vim.opt.termguicolors = true
 
 vim.opt.showmode = false
 vim.opt.scrolloff = 10
-vim.opt.signcolumn = "yes"
 vim.opt.colorcolumn = "80"
 
 vim.opt.conceallevel = 0
@@ -77,6 +74,20 @@ if require("craftznake.plugins.mode").is_zen() then
     vim.opt.ruler = false
     vim.opt.signcolumn = "no"
     vim.opt.colorcolumn = ""
-    vim.opt.nu = false
-    vim.opt.rnu = false
+else
+    vim.opt.ruler = true
+    vim.opt.signcolumn = "yes"
+    vim.opt.colorcolumn = "80"
 end
+vim.opt.cursorline = true
+-- Re-apply CursorLine on every colorscheme change; otherwise loading the
+-- colorscheme (later, in packages.lua) resets all highlight groups and wipes
+-- this out.
+local function apply_cursorline()
+    vim.api.nvim_set_hl(0, "CursorLine", { bg = "#3f2e21" })
+end
+
+vim.opt.nu = true
+vim.opt.rnu = true
+require("craftznake.theme").register("cursorline", apply_cursorline)
+apply_cursorline()

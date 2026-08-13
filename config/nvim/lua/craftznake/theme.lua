@@ -50,7 +50,7 @@ function M.palette()
         dim           = hex(comment.fg) or "none",
         accent        = hex(string_hl.fg) or hex(normal.fg) or "none",
         visual_fg     = hex(visual.fg) or "none",
-        visual_bg     = hex(visual.bg) or hex(cursorline.bg) or "none",
+        visual_bg     = hex(cursorline.bg) or hex(visual.bg) or "none",
         border        = hex(floatborder.fg) or hex(normal.fg) or "none",
         float_bg      = hex(normal_float.bg) or hex(normal.bg) or "none",
         tab_active_fg = hex(tab_sel.fg) or hex(normal.fg) or "none",
