@@ -42,8 +42,10 @@ if command -v aws_completer >/dev/null 2>&1; then
 fi
 
 
-# Register related aws commands suggestions
 if command -v acli >/dev/null 2>&1; then
-    eval "$(acli completion zsh)"
+    load_acli() {
+        eval "$(acli completion zsh)"
+        echo "acli completions loaded."
+    }
 fi
 
