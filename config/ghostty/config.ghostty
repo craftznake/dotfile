@@ -32,6 +32,11 @@ mouse-hide-while-typing=true
 window-padding-x = 5
 window-padding-y = 5
 
+################################################################################
+# MacOS specific configuration:
+################################################################################
+
+macos-option-as-alt = left
 # Show tabs in the title bar area (macOS native tab bar)
 macos-titlebar-style = tabs
 
