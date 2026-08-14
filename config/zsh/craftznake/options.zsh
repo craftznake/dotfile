@@ -26,6 +26,9 @@ setopt EXTENDED_GLOB
 # compinit + compaudit pass (~100ms).
 autoload bashcompinit && bashcompinit
 
+# Ignore duplicate entries in our history
+setopt HIST_IGNORE_ALL_DUPS
+
 # Preferred editor for local and remote sessions
 if [[ -n $SSH_CONNECTION ]]; then
   export EDITOR='vim'

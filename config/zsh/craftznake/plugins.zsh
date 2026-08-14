@@ -26,6 +26,7 @@ source ${zsh_plugins}.zsh
 autoload -U select-word-style
 select-word-style bash
 
+import 1.plugins.after/zsh-fast-syntax-highlighting.zsh
 import 1.plugins.after/zsh-fzf.zsh
 import 1.plugins.after/zsh-starship.zsh
 import 1.plugins.after/zsh-z.zsh

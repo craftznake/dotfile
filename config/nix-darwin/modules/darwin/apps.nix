@@ -31,7 +31,6 @@
       "coreutils"
       "displayplacer"
       "docker-buildx"
-      "gemini-cli"
       "git-crypt"
       "libtool"
       "ninja"
