@@ -69,6 +69,13 @@ confirm-close-surface = false
 unfocused-split-opacity = 0.4
 
 ################################################################################
+# Quick Terminal configuration
+################################################################################
+
+# Always open this in a fixed screen, which is our primary screen
+quick-terminal-screen = macos-menu-bar
+
+################################################################################
 # Key Bindings
 #
 # WezTerm leader: CTRL+ALT+CMD+Space (1000ms timeout)
