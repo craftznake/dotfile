@@ -73,9 +73,17 @@ function M.set(mode, opts)
     vim.g.craftznake_mode = mode
     write_persisted(mode)
 
+
     if not opts.silent then
         if changed then
-            vim.notify("Craftznake mode to '" .. mode .. "'. Restart Neovim to fully apply.", vim.log.levels.INFO)
+            -- 1. define the temporary path for the session file.
+            local session_file = vim.fn.stdpath("data") .. "/restart_session.vim"
+
+            -- 2. save the current session
+            vim.cmd("mksession!" .. vim.fn.fnameescape(session_file))
+
+            -- 3. Build the command to launch a new Neovim instance loading that session
+            vim.cmd('restart source ' .. vim.fn.fnameescape(session))
         else
             vim.notify("Craftznake mode is already '" .. mode .. "'.", vim.log.levels.INFO)
         end
@@ -88,7 +96,9 @@ function M.toggle()
 end
 
 local function register_commands()
-    vim.api.nvim_create_user_command("ZenMode", function() M.set(M.ZEN) end,
+    vim.api.nvim_create_user_command("ZenMode", function()
+            M.set(M.ZEN)
+        end,
         { desc = "Switch Craftznake to minimal 'zen' mode (core options + treesitter only)" })
 
     vim.api.nvim_create_user_command("FullMode", function() M.set(M.FULL) end,
