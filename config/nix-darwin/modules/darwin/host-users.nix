@@ -1,4 +1,9 @@
-{ username, ... }:
+{
+  username,
+  uid,
+  hostname,
+  ...
+}:
 
 #############################################################
 #
@@ -7,10 +12,12 @@
 #############################################################
 
 {
-  # networking.hostName = hostname;
-  # networking.computerName = hostname;
+  networking.hostName = hostname;
+  networking.computerName = hostname;
+  networking.localHostName = hostname;
 
   users.users."${username}" = {
+    inherit uid;
     home = "/Users/${username}";
     description = username;
   };

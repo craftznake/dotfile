@@ -1,7 +1,7 @@
 { pkgs, ... }:
 {
   nix = {
-enable = false;
+    enable = false;
     #package = pkgs.nix;
     #optimise = {
     #  automatic = true;

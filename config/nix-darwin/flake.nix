@@ -13,26 +13,38 @@
     };
   };
 
-  outputs = { nixpkgs, darwin, ... }:
+  outputs =
+    { nixpkgs, darwin, ... }:
     let
       supportedSystems = [ "aarch64-darwin" ];
       forAllSystems = f: nixpkgs.lib.genAttrs supportedSystems (system: f system);
+
+      # Resolved from the shell invoking `nix build`/`darwin-rebuild`
+      # (see `makefile`), so this flake works on whatever machine it's
+      # run on without hardcoding a specific host.
       username = builtins.getEnv "USER";
-      envHost = builtins.getEnv "HOST";
-hostname = if envHost == "" then "athena" else envHost;
+      hostname = builtins.getEnv "HOST";
+      uidStr = builtins.getEnv "UID";
+
+      assertNonEmpty =
+        name: value:
+        if value == "" then
+          throw "${name} is empty; run via `make` (which exports it) or export ${name} yourself, and pass --impure"
+        else
+          value;
     in
     {
-      formatter = forAllSystems (system:
-        nixpkgs.legacyPackages.${system}.nixpkgs-fmt
-      );
-      darwinConfigurations ={
-          "${hostname}" = darwin.lib.darwinSystem {
-            system = builtins.currentSystem;
-            specialArgs = { inherit username hostname; };
-            modules = [
-              ./modules/darwin/index.nix
-            ];
-          };
+      formatter = forAllSystems (system: nixpkgs.legacyPackages.${system}.nixfmt-tree);
+      darwinConfigurations."${assertNonEmpty "HOST" hostname}" = darwin.lib.darwinSystem {
+        system = builtins.currentSystem;
+        specialArgs = {
+          username = assertNonEmpty "USER" username;
+          uid = builtins.fromJSON (assertNonEmpty "UID" uidStr);
+          inherit hostname;
+        };
+        modules = [
+          ./modules/darwin/index.nix
+        ];
+      };
     };
-};
 }

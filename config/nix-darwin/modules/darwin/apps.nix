@@ -13,16 +13,31 @@
     };
 
     taps = [
-      "nikitabobko/tap"
-      "FelixKratz/formulae"
-      "sozercan/repo"
-      "atlassian/homebrew-acli"
-      "wxtsky/tap"
+      {
+        name = "FelixKratz/formulae";
+        trusted = true;
+      }
+      {
+        name = "sozercan/repo";
+        trusted = true;
+      }
+      {
+        name = "nikitabobko/tap";
+        trusted = true;
+      }
+      {
+        name = "atlassian/homebrew-acli";
+        trusted = true;
+      }
+      {
+        name = "wxtsky/tap";
+        trusted = true;
+      }
     ];
 
     # `brew install`
     brews = [
-      "acli"
+"acli"
       "antidote"
       "aspell"
       "autoconf"
@@ -37,6 +52,7 @@
       "slides"
       "tlrc"
       "watch"
+      "terminal-notifier"
     ];
 
     # `brew install --cask`
@@ -50,6 +66,7 @@
       "finicky"
       "ghostty"
       "homerow"
+      "firefox"
       "jordanbaird-ice"
       "karabiner-elements"
       "kaset"

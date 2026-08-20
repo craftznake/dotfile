@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, username, ... }:
 
 ###################################################################################
 #
@@ -11,6 +11,7 @@
 {
   system = {
     stateVersion = 5;
+    primaryUser = username;
     # activationScripts are executed every time you boot the system or run `nixos-rebuild` / `darwin-rebuild`.
     activationScripts.homebrew.text = ''
         # Install homebrew if it isn't there
@@ -70,4 +71,7 @@
 
   # Add ability to used TouchID for sudo authentication
   security.pam.services.sudo_local.touchIdAuth = true;
+  # Allow TouchID for sudo to work when invoked from inside a terminal
+  # multiplexer / reattached session (tmux, terminal panes, etc.)
+  security.pam.services.sudo_local.reattach = true;
 }

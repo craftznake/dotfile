@@ -1,6 +1,7 @@
 # Variables
-HOSTNAME := "athena"
+HOSTNAME := $(shell scutil --get LocalHostName)
 USERNAME := $(shell whoami)
+USERID := $(shell id -u)
 ARCH := $(shell uname -m)
 SYSTEM := $(if $(filter arm64,$(ARCH)),aarch64-darwin,$(if $(filter x86_64,$(ARCH)),x86_64-darwin,$(error Unsupported architecture: $(ARCH))))
 
@@ -45,12 +46,12 @@ check: config
 # Build configuration
 build: config
 	@echo "${GREEN}Building configuration...${NC}"
-	@HOST=$(HOSTNAME) USER=$(USERNAME) nix build .#darwinConfigurations.$(HOSTNAME).system --impure
+	@env HOST=$(HOSTNAME) USER=$(USERNAME) UID=$(USERID) nix build .#darwinConfigurations.$(HOSTNAME).system --impure
 
 # Switch to configuration
 switch: build
 	@echo "${GREEN}Switching to new configuration...${NC}"
-	@HOST=$(HOSTNAME) USER=$(USERNAME) ./result/sw/bin/darwin-rebuild switch --flake .#$(HOSTNAME) --impure
+	@sudo env HOST=$(HOSTNAME) USER=$(USERNAME) UID=$(USERID) ./result/sw/bin/darwin-rebuild switch --flake .#$(HOSTNAME) --impure
 	@echo "${GREEN}Cleaning up...${NC}"
 	@rm -rf ./result
 
