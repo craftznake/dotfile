@@ -12,10 +12,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     jj-starship-overlay = {
-        url = "github:dmmulroy/jj-starship";
+      url = "github:dmmulroy/jj-starship";
     };
     herdr = {
-        url = "github:ogulcancelik/herdr";
+      url = "github:herdrdev/herdr-nix";
     };
     flake-registry = {
       url = "github:nixos/flake-registry";
@@ -23,21 +23,38 @@
     };
   };
 
-  outputs = { nixpkgs, home-manager, rust-overlay, jj-starship-overlay, herdr, ... }:
+  outputs =
+    {
+      nixpkgs,
+      home-manager,
+      rust-overlay,
+      jj-starship-overlay,
+      herdr,
+      ...
+    }:
     let
-      systems = [ "aarch64-darwin" "x86_64-darwin" "x86_64-linux" "aarch64-linux" ];
+      systems = [
+        "aarch64-darwin"
+        "x86_64-darwin"
+        "x86_64-linux"
+        "aarch64-linux"
+      ];
       forAllSystems = nixpkgs.lib.genAttrs systems;
-      
-      pkgsFor = system: import nixpkgs {
-        inherit system;
-        overlays = [
-          rust-overlay.overlays.default
-          jj-starship-overlay.overlays.default
-          herdr.overlays.default
-          (import ./overlays)
-        ];
-      };
-      
+
+      pkgsFor =
+        system:
+        import nixpkgs {
+          inherit system;
+          overlays = [
+            rust-overlay.overlays.default
+            jj-starship-overlay.overlays.default
+            (import ./overlays)
+            (final: prev: {
+              herdr = herdr.packages.${system}.default;
+            })
+          ];
+        };
+
       # For home-manager configuration
       system = builtins.currentSystem or "aarch64-darwin";
       username = builtins.getEnv "USER";
@@ -58,7 +75,7 @@
       };
 
       packages = forAllSystems (system: {
-        inherit (pkgsFor system) tpack;
+        inherit (pkgsFor system) herdr;
       });
 
       formatter.aarch64-darwin = nixpkgs.legacyPackages.aarch64-darwin.nixpkgs-fmt;

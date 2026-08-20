@@ -14,13 +14,24 @@
 
   home = {
     packages = with pkgs; [
-      (rust-bin.stable.latest.default.override { extensions = [ "rust-src" "rust-analyzer" "clippy" "rustfmt" "llvm-tools-preview" ]; })
+      (rust-bin.stable.latest.default.override {
+        extensions = [
+          "rust-src"
+          "rust-analyzer"
+          "clippy"
+          "rustfmt"
+          "llvm-tools-preview"
+        ];
+      })
       awscli2
       bat
       bazel-buildtools
-      bazelisk
+      # lowPrio: bazelisk ships an internal `bin/sha256sum` helper that
+      # conflicts with uutils-coreutils-noprefix's `sha256sum`; defer to it.
+      (pkgs.lib.lowPrio bazelisk)
       buf
       colima
+      lima
       curl
       difftastic
       direnv
@@ -31,9 +42,11 @@
       fzf
       btop
       git
+      glow
       go
       golangci-lint
       gopls
+      kubernetes-helm
       gotools
       herdr
       istioctl

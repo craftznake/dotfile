@@ -1,4 +1,9 @@
-{ pkgs, username, config, ... }:
+{
+  pkgs,
+  username,
+  config,
+  ...
+}:
 ################################
 #
 # User dotfile
@@ -30,6 +35,11 @@ in
           eval "$(/opt/homebrew/bin/brew shellenv)"
       fi
     '';
+    envExtra = ''
+      alias tf='terraform'
+      alias k="kubectl"
+      alias vim="nvim"
+    '';
   };
   home.file = {
     "aerospace" = {
@@ -51,6 +61,10 @@ in
       source = "${dotconfigs}/config/nvim";
       target = ".config/nvim";
       recursive = true;
+    };
+    "vimrc" = {
+      source = config.lib.file.mkOutOfStoreSymlink "${dotconfigs}/config/vim/vimrc";
+      target = ".vimrc";
     };
     "wezterm" = {
       source = "${dotconfigs}/config/wezterm";
@@ -108,12 +122,12 @@ in
       recursive = true;
     };
     "herdr_config" = {
-        source = config.lib.file.mkOutOfStoreSymlink "${dotconfigs}/config/herdr/config.toml";
-        target = ".config/herdr/config.toml";
+      source = config.lib.file.mkOutOfStoreSymlink "${dotconfigs}/config/herdr/config.toml";
+      target = ".config/herdr/config.toml";
     };
     "herdr_plugins" = {
-        source = config.lib.file.mkOutOfStoreSymlink "${dotconfigs}/config/herdr/plugins.txt";
-        target = ".config/herdr/plugins.txt";
+      source = config.lib.file.mkOutOfStoreSymlink "${dotconfigs}/config/herdr/plugins.txt";
+      target = ".config/herdr/plugins.txt";
     };
     "alacritty" = {
       source = "${dotconfigs}/config/alacritty";
@@ -127,4 +141,3 @@ in
     # };
   };
 }
-
