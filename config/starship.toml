@@ -14,9 +14,8 @@ $directory\
 $env_var\
 $custom\
 $cmd_duration\
-$jobs\
-$os\
 $container\
+$nix_shell\
 $shell\
 $status\
 $line_break\
@@ -44,7 +43,7 @@ vimcmd_visual_symbol = "[V](bold blue)"
 # truncation_symbol = "…/"
 read_only = " [RO]"
 style = "bold cyan_bright dimmed"
-truncation_length = 8
+truncation_length = 6
 truncate_to_repo = true
 
 [git_branch]
@@ -75,34 +74,6 @@ disabled = true
 [docker_context]
 format = " [ $context](bold blue1) "
 
-[golang]
-format = "[ $version](bold cyan_bright) "
-version_format = "v${major}.${minor}"
-
-[lua]
-format = "[ $version](bold yellow_bright) "
-version_format = "v${major}.${minor}"
-
-[nodejs]
-format = " [ ($version)](bold green_bright) "
-version_format = "v${major}.${minor}"
-
-[pulumi]
-format = " [󰆦 ($username@)$stack](bold yellow_bright) "
-version_format = "v${major}.${minor}"
-
-[python]
-format = ' [ ${pyenv_prefix}(${version} )(\($virtualenv\) )](bold green_bright) '
-version_format = "v${major}.${minor}"
-
-[rust]
-format = " [󱘗 $version](bold orange_bright) "
-version_format = "v${major}.${minor}"
-
-[terraform]
-format = " [󰆩 $workspace](bold magenta_bright) "
-version_format = "v${major}.${minor}"
-
 [aws]
 format = "[⛈ $profile]($style)"
 symbol = ""
@@ -113,20 +84,16 @@ force_display = false
 format = "[ ${name}](bold white0_reduce_blue) "
 heuristic = true
 
-[jobs]
-number_threshold = 1
-format = "[$number job(s)](bold orange_bright) "
-
 [custom.jj]
 when = "jj-starship detect"
 shell = [
   "jj-starship",
+  "--no-jj-prefix",
+  "--no-git-prefix",
   "--no-jj-status",
   "--no-git-status",
   "--bookmarks-display-limit",
   "1",
-  "--jj-symbol",
-  "󱗆 "
 ]
 symbol = ""
 format = "$output "
