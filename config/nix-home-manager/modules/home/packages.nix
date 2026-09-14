@@ -25,6 +25,7 @@
       })
       awscli2
       bat
+      (pkgs.lib.lowPrio rustup)
       bazel-buildtools
       # lowPrio: bazelisk ships an internal `bin/sha256sum` helper that
       # conflicts with uutils-coreutils-noprefix's `sha256sum`; defer to it.

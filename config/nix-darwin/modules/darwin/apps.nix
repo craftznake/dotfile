@@ -37,7 +37,8 @@
 
     # `brew install`
     brews = [
-"acli"
+      "acli"
+      "create-dmg"
       "antidote"
       "aspell"
       "autoconf"
