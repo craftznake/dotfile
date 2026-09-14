@@ -1,3 +1,2 @@
 paulbkim-dev/vim-herdr-navigation
-milkyskies/herdr-attention
 qu8n/herdr-automatic-rename

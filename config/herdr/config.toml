@@ -1,6 +1,4 @@
 onboarding = false
-# herdr configuration
-# Place this file at ~/.config/herdr/config.toml
 
 [theme]
 name = "gruvbox"
@@ -25,6 +23,8 @@ new_workspace = "prefix+shift+n"
 rename_tab = "prefix+,"
 rename_workspace = "prefix+$"
 switch_tab = "prefix+1..9"  # Ensures window switching matches base-index 1 behavior
+move_tab_previous = "prefix+<"
+move_tab_next = "prefix+>"
 
 # Disable unused key
 focus_pane_down = ""
@@ -39,17 +39,9 @@ navigate_pane_left = ""
 navigate_pane_up = ""
 navigate_pane_right = ""
 navigate_pane_down = ""
-swap_pane_left = ""
-swap_pane_right = ""
-swap_pane_down = ""
-swap_pane_up = ""
 switch_workspace = ""
-
-[[keys.command]]
-key = "prefix+a"  # "attention" — change if it collides
-type = "plugin_action"
-command = "attention.jump.next"
-description = "jump to next agent needing attention"
+rename_pane = ""
+goto = ""
 
 [[keys.command]]
 key = "ctrl+h"
@@ -75,11 +67,17 @@ type = "plugin_action"
 command = "vim-herdr-navigation.right"
 description = "navigate right (vim/herdr)"
 
+[[keys.command]]
+key = "prefix+g"
+type = "plugin_action"
+command = "herdr-navigator.open"
+description = "jump to anything"
+
 [ui]
 sidebar_width = 26
 sidebar_min_width = 18
 sidebar_max_width = 36
-sidebar_collapsed_mode = "compact"
+sidebar_collapsed_mode = "hidden"
 
 # Global configuration (Matches set -g mouse on)
 mouse_capture = true
@@ -87,8 +85,27 @@ redraw_on_focus_gained = false
 mouse_scroll_lines = 3
 confirm_close = true
 prompt_new_tab_name = false
-pane_borders = true
 pane_gaps = false
+pane_borders = "auto"
+prompt_new_workspace_name = true
+show_agent_labels_on_pane_borders = true
+
+tab_bar_position = "top"
+
+[[ui.tab_bar_right]]
+type = "datetime"
+format = "%Y-%m-%d %H:%M"
+
+[ui.sidebar.agents]
+row_gap = 0
+rows = [
+  ["state_icon", "agent"],
+  ["terminal_title_stripped"],
+]
+
+[ui.sidebar.spaces]
+row_gap = 0
+rows = [["state_icon", "workspace"]]
 
 [ui.toast]
 delivery = "herdr"
@@ -99,7 +116,6 @@ scrollback_limit_bytes = 15000000
 
 [experimental]
 switch_ascii_input_source_in_prefix = true
-kitty_graphics = true
 
 [worktrees]
 directory = "~/.herdr/worktrees"
