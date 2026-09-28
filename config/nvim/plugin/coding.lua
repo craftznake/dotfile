@@ -13,4 +13,3 @@ require("mini.pairs").setup({
     skip_unbalanced = true,
     markdown = true,
 })
-
