@@ -66,7 +66,7 @@ local function git_records(path, root, relpath)
     for line in (output .. '\n'):gmatch('(.-)\n') do
         local hash, _, final = line:match('^(%x+) (%d+) (%d+)')
         if hash then
-            commit = { id = hash, lines = {}, path = path }
+            commit = { id = hash, path = path }
             records[tonumber(final)] = commit
         elseif commit and line:match('^summary ') then
             commit.summary = line:sub(9)
@@ -77,19 +77,7 @@ local function git_records(path, root, relpath)
         end
     end
 
-    local grouped, by_id = {}, {}
-    for line_num, record in pairs(records) do
-        local group = by_id[record.id]
-        if not group then
-            group = record
-            by_id[group.id] = group
-            grouped[#grouped + 1] = group
-        end
-        group.lines[#group.lines + 1] = line_num
-        records[line_num] = group
-    end
-    table.sort(grouped, function(a, b) return a.lines[1] < b.lines[1] end)
-    return grouped, records
+    return records
 end
 
 local function jj_records(path, root, relpath)
@@ -98,30 +86,20 @@ local function jj_records(path, root, relpath)
     local output, err = run({ 'jj', '--repository', root, 'file', 'annotate', relpath, '-T', template }, root)
     if not output then return nil, err end
 
-    local grouped, by_id, records = {}, {}, {}
+    local records = {}
     for row in (output .. '\n'):gmatch('(.-)\n') do
         local number, change_id, commit_id, summary, author = row:match('^(.-)\31(.-)\31(.-)\31(.-)\31(.-)\31')
         if number then
-            local line_num = tonumber(number)
-            local group = by_id[change_id]
-            if not group then
-                group = {
-                    id = change_id,
-                    commit_id = commit_id,
-                    summary = summary,
-                    author = author,
-                    lines = {},
-                    path = path
-                }
-                by_id[change_id] = group
-                grouped[#grouped + 1] = group
-            end
-            group.lines[#group.lines + 1] = line_num
-            records[line_num] = group
+            records[tonumber(number)] = {
+                id = change_id,
+                commit_id = commit_id,
+                summary = summary,
+                author = author,
+                path = path,
+            }
         end
     end
-    table.sort(grouped, function(a, b) return a.lines[1] < b.lines[1] end)
-    return grouped, records
+    return records
 end
 
 local function repo_for(path)
@@ -146,41 +124,61 @@ local function file_diff(kind, root, relpath, group)
     if kind == 'git' then
         return run({ 'git', '-C', root, 'show', '--format=fuller', '--no-ext-diff', group.id, '--', relpath }, root)
     end
-    return run({ 'jj', '--repository', root, 'diff', '--git', '-r', group.commit_id, '--', relpath }, root)
+    return run({ 'jj', '--repository', root, 'diff', '--git', '-r', group.id, '--', relpath }, root)
 end
 
 local praise_colors = {
-    { fg = '#fb4934' },
-    { fg = '#b8bb26' },
-    { fg = '#fabd2f' },
-    { fg = '#83a598' },
-    { fg = '#d3869b' },
-    { fg = '#8ec07c' },
-    { fg = '#fe8019' },
-    { fg = '#d65d0e' },
+    '#fb4934',
+    '#b8bb26',
+    '#fabd2f',
+    '#83a598',
+    '#d3869b',
+    '#8ec07c',
+    '#fe8019',
+    '#d65d0e',
 }
 
-local function color_for(group)
-    local hash = 0
-    for i = 1, #group.id do
-        hash = (hash * 31 + group.id:byte(i)) % #praise_colors
+local function render_rail(kind, records, line_count)
+    local lines, blocks, color_indexes = {}, {}, {}
+    local colors_by_id = {}
+    local next_color_index = 0
+    local previous_id
+    for line = 1, line_count do
+        local group = records[line]
+        if not group then
+            lines[line] = ''
+            previous_id = nil
+        else
+            local is_block_start = group.id ~= previous_id
+            local color_index
+            if is_block_start then
+                -- Same commit keeps the same color across all of its blocks
+                color_index = colors_by_id[group.id]
+                if not color_index then
+                    color_index = (next_color_index % #praise_colors) + 1
+                    -- Keep adjacent blocks distinguishable when the palette wraps around
+                    local previous_block = blocks[#blocks]
+                    if previous_block and color_index == previous_block.color_index then
+                        color_index = (color_index % #praise_colors) + 1
+                    end
+                    colors_by_id[group.id] = color_index
+                    next_color_index = next_color_index + 1
+                end
+                blocks[#blocks + 1] = { start_row = line, group = group, color_index = color_index }
+            else
+                color_index = blocks[#blocks].color_index
+            end
+            color_indexes[line] = color_index
+            if is_block_start then
+                local label = kind == 'jj' and group.id or group.id:sub(1, 12)
+                lines[line] = string.format('▌ %s  %s', label, group.summary or '(no description)')
+            else
+                lines[line] = '▌'
+            end
+            previous_id = group.id
+        end
     end
-    return praise_colors[hash + 1]
-end
-
-local function render_groups(kind, groups)
-    local lines, markers = {}, {}
-    for i, group in ipairs(groups) do
-        local label = kind == 'jj' and group.id or group.id:sub(1, 12)
-        local start_row = #lines + 1
-        lines[#lines + 1] = string.format('▌ %s  %s', label, group.summary or '(no description)')
-        lines[#lines + 1] = string.format('  %s · %d line%s', group.author or 'Unknown author', #group.lines,
-            #group.lines == 1 and '' or 's')
-        markers[#markers + 1] = { row = start_row, end_row = start_row + 1, group = group }
-        if i < #groups then lines[#lines + 1] = '' end
-    end
-    if #lines == 0 then lines[1] = 'No committed lines to display' end
-    return lines, markers
+    return lines, blocks, color_indexes
 end
 
 local function source_line_group(records, line)
@@ -191,49 +189,68 @@ local function close_explorer(state)
     if state.closed then return end
     state.closed = true
     if state.augroup then pcall(vim.api.nvim_del_augroup_by_id, state.augroup) end
-    if state.diff_win and vim.api.nvim_win_is_valid(state.diff_win) then pcall(vim.api.nvim_win_close, state.diff_win, true) end
-    if state.list_win and vim.api.nvim_win_is_valid(state.list_win) then pcall(vim.api.nvim_win_close, state.list_win, true) end
+    if state.diff_win and vim.api.nvim_win_is_valid(state.diff_win) then
+        pcall(vim.api.nvim_win_close, state.diff_win,
+            true)
+    end
+    if state.list_win and vim.api.nvim_win_is_valid(state.list_win) then
+        pcall(vim.api.nvim_win_close, state.list_win,
+            true)
+    end
     if state.list_buf and vim.api.nvim_buf_is_valid(state.list_buf) then
         pcall(vim.api.nvim_buf_delete, state.list_buf, { force = true })
     end
 end
 
-local function explorer()
+local function praise_current_file()
     local source_buf = vim.api.nvim_get_current_buf()
     local path = vim.api.nvim_buf_get_name(source_buf)
     if path == '' or vim.fn.filereadable(path) ~= 1 then
         vim.notify('Praise requires a saved file on disk', vim.log.levels.WARN)
         return
     end
+
     local kind, root = repo_for(path)
     if not kind then
         vim.notify('Praise: file is not in a Git or jj repository', vim.log.levels.WARN)
         return
     end
+
     local relpath = relative_path(root, path)
     if not relpath then
         vim.notify('Praise: could not resolve file path in repository', vim.log.levels.ERROR)
         return
     end
-    local groups, records_or_err = (kind == 'jj' and jj_records or git_records)(path, root, relpath)
-    if not groups then
-        vim.notify('Praise: ' .. tostring(records_or_err), vim.log.levels.ERROR)
+
+    local records, records_err = (kind == 'jj' and jj_records or git_records)(path, root, relpath)
+    if not records then
+        vim.notify('Praise: ' .. tostring(records_err), vim.log.levels.ERROR)
         return
     end
 
     local source_win = vim.api.nvim_get_current_win()
+    local source_line_count = vim.api.nvim_buf_line_count(source_buf)
+
+    -- Create rail sidebar window
     vim.cmd('topleft vertical new')
     local list_win, list_buf = vim.api.nvim_get_current_win(), vim.api.nvim_get_current_buf()
     set_scratch(list_buf, 'praise')
+
+    local list_lines, blocks, color_indexes = render_rail(kind, records, source_line_count)
+
+    vim.bo[list_buf].readonly = false
     vim.bo[list_buf].modifiable = true
-    local list_lines, list_markers = render_groups(kind, groups)
     vim.api.nvim_buf_set_lines(list_buf, 0, -1, false, list_lines)
     vim.bo[list_buf].modifiable = false
     vim.bo[list_buf].readonly = true
+
     vim.wo[list_win].number = false
     vim.wo[list_win].relativenumber = false
     vim.wo[list_win].signcolumn = 'no'
-    vim.cmd('vertical resize 38')
+    vim.wo[list_win].wrap = false
+    vim.cmd('vertical resize 50')
+
+    -- Restore focus to source window
     vim.api.nvim_set_current_win(source_win)
 
     local ns = vim.api.nvim_create_namespace('PraiseExplorer' .. list_buf)
@@ -242,110 +259,137 @@ local function explorer()
         list_buf = list_buf,
         source_buf = source_buf,
         source_win = source_win,
-        selected_group = nil,
         syncing = false,
+        closed = false,
     }
 
     local function apply_decorations()
-        vim.api.nvim_buf_clear_namespace(source_buf, ns, 0, -1)
         vim.api.nvim_buf_clear_namespace(list_buf, ns, 0, -1)
-        for _, marker in ipairs(list_markers) do
-            vim.api.nvim_set_hl(0, 'PraiseCommit' .. marker.group.id, color_for(marker.group))
-            vim.api.nvim_buf_set_extmark(list_buf, ns, marker.row - 1, 0, {
-                end_row = marker.end_row,
-                hl_group = 'PraiseCommit' .. marker.group.id,
-                hl_eol = true,
-                priority = 120,
-            })
-            for _, line in ipairs(marker.group.lines) do
-                vim.api.nvim_buf_set_extmark(source_buf, ns, line - 1, 0, {
-                    sign_text = '▌',
-                    sign_hl_group = 'PraiseCommit' .. marker.group.id,
+        for _, block in ipairs(blocks) do
+            local end_row = block.start_row
+            while end_row < #list_lines and color_indexes[end_row + 1] == block.color_index do
+                end_row = end_row + 1
+            end
+            local color = praise_colors[block.color_index]
+            local label = 'PraiseRail_' .. list_buf .. '_' .. block.start_row
+            vim.api.nvim_set_hl(0, label, { fg = color })
+            for row = block.start_row, end_row do
+                vim.api.nvim_buf_set_extmark(list_buf, ns, row - 1, 0, {
+                    end_row = row,
+                    hl_group = label,
+                    hl_eol = true,
                     priority = 120,
-                })
-                vim.api.nvim_buf_set_extmark(source_buf, ns, line - 1, 0, {
-                    line_hl_group = 'PraiseCommit' .. marker.group.id,
-                    priority = 20,
                 })
             end
         end
     end
 
-    local function group_at_list_row(row)
-        for _, marker in ipairs(list_markers) do
-            if row >= marker.row and row <= marker.end_row then return marker.group end
-        end
-        return nil
+    local function selected_group()
+        if not vim.api.nvim_win_is_valid(list_win) then return nil end
+        return records[vim.api.nvim_win_get_cursor(list_win)[1]]
     end
 
-    local function select_group(group)
-        if not group then return end
-        state.selected_group = group
+    local function sync_to_source(win)
+        if state.syncing or state.closed then return end
+        if not vim.api.nvim_win_is_valid(source_win) or not vim.api.nvim_win_is_valid(list_win) then
+            return
+        end
+
+        local line = vim.api.nvim_win_get_cursor(win)[1]
         state.syncing = true
-        if vim.api.nvim_win_is_valid(source_win) then
-            vim.api.nvim_win_set_cursor(source_win, { group.lines[1], 0 })
-            vim.api.nvim_win_call(source_win, function() vim.cmd('normal! zv') end)
+        if win == list_win and records[line] then
+            vim.api.nvim_win_set_cursor(source_win, { line, 0 })
+        elseif win == source_win then
+            local max_line = vim.api.nvim_buf_line_count(list_buf)
+            local target_line = math.min(line, max_line)
+            if target_line > 0 then
+                vim.api.nvim_win_set_cursor(list_win, { target_line, 0 })
+            end
         end
         state.syncing = false
-        if state.diff_win and vim.api.nvim_win_is_valid(state.diff_win) then pcall(vim.api.nvim_win_close, state.diff_win, true) end
+    end
+
+    local function sync_scroll(win)
+        if state.syncing or state.closed then return end
+        if not vim.api.nvim_win_is_valid(win) then return end
+        local target_win = (win == list_win) and source_win or list_win
+        if not vim.api.nvim_win_is_valid(target_win) then return end
+
+        state.syncing = true
+        -- Only the topline is shared; each window keeps its own cursor
+        local topline = vim.api.nvim_win_call(win, function() return vim.fn.winsaveview().topline end)
+        vim.api.nvim_win_call(target_win, function()
+            if vim.fn.winsaveview().topline ~= topline then
+                vim.fn.winrestview({ topline = topline })
+            end
+        end)
+        state.syncing = false
+    end
+
+    local function show_selected_diff()
+        local group = selected_group()
+        if not group then return end
+
+        if state.diff_win and vim.api.nvim_win_is_valid(state.diff_win) then
+            pcall(vim.api.nvim_win_close, state.diff_win, true)
+        end
+
         local diff, err = file_diff(kind, root, relpath, group)
         if not diff then
             vim.notify('Praise diff: ' .. tostring(err), vim.log.levels.ERROR)
             return
         end
+
         if not vim.api.nvim_win_is_valid(source_win) then return end
         vim.api.nvim_set_current_win(source_win)
         vim.cmd('botright new')
+
         state.diff_win = vim.api.nvim_get_current_win()
         local diff_buf = vim.api.nvim_get_current_buf()
         set_scratch(diff_buf, 'diff')
+
         vim.api.nvim_buf_set_lines(diff_buf, 0, -1, false, split_lines(diff))
         vim.bo[diff_buf].modifiable = false
         vim.bo[diff_buf].readonly = true
         vim.cmd('resize ' .. math.max(8, math.floor(vim.o.lines * 0.35)))
+
         vim.api.nvim_set_current_win(list_win)
     end
 
-    local function select_group_at_cursor()
-        select_group(group_at_list_row(vim.api.nvim_win_get_cursor(list_win)[1]))
-    end
-
-    local function sync_list_to_source()
-        if state.syncing or state.closed then return end
-        local source_line = vim.api.nvim_win_get_cursor(source_win)[1]
-        local group = source_line_group(records_or_err, source_line)
-        if not group then return end
-        state.selected_group = group
-        for _, marker in ipairs(list_markers) do
-            if marker.group == group then
-                state.syncing = true
-                vim.api.nvim_win_set_cursor(list_win, { marker.row, 0 })
-                state.syncing = false
-                break
-            end
-        end
-    end
-
     apply_decorations()
-    vim.keymap.set('n', '<CR>', select_group_at_cursor, { buffer = list_buf, silent = true, desc = 'Show selected commit' })
-    vim.keymap.set('n', 'q', function() close_explorer(state) end, { buffer = list_buf, silent = true, desc = 'Close Praise explorer' })
+
+    vim.keymap.set('n', '<CR>', show_selected_diff, {
+        buffer = list_buf,
+        silent = true,
+        desc = 'Show selected commit diff',
+    })
+
     state.augroup = vim.api.nvim_create_augroup('PraiseExplorer' .. list_buf, { clear = true })
+
+    -- Cursor Syncing
     vim.api.nvim_create_autocmd('CursorMoved', {
         group = state.augroup,
         buffer = list_buf,
-        callback = select_group_at_cursor,
+        callback = function() sync_to_source(list_win) end,
     })
     vim.api.nvim_create_autocmd('CursorMoved', {
         group = state.augroup,
         buffer = source_buf,
-        callback = sync_list_to_source,
+        callback = function() sync_to_source(source_win) end,
     })
-    vim.api.nvim_create_autocmd('WinEnter', {
+
+    -- Scroll Syncing
+    vim.api.nvim_create_autocmd('WinScrolled', {
         group = state.augroup,
-        callback = function()
-            if vim.api.nvim_get_current_win() == source_win then sync_list_to_source() end
+        callback = function(ev)
+            local w = tonumber(ev.match)
+            if w == list_win or w == source_win then
+                sync_scroll(w)
+            end
         end,
     })
+
+    -- Auto Refresh on Save
     vim.api.nvim_create_autocmd('BufWritePost', {
         group = state.augroup,
         buffer = source_buf,
@@ -356,21 +400,44 @@ local function explorer()
                 vim.notify('Praise refresh: ' .. tostring(refresh_err), vim.log.levels.ERROR)
                 return
             end
-            groups, records_or_err = refreshed
+            records = refreshed
+            source_line_count = vim.api.nvim_buf_line_count(source_buf)
+
+            vim.bo[list_buf].readonly = false
             vim.bo[list_buf].modifiable = true
-            list_lines, list_markers = render_groups(kind, groups)
+            list_lines, blocks, color_indexes = render_rail(kind, records, source_line_count)
             vim.api.nvim_buf_set_lines(list_buf, 0, -1, false, list_lines)
             vim.bo[list_buf].modifiable = false
             vim.bo[list_buf].readonly = true
+
             apply_decorations()
         end,
     })
+
+    -- Cleanup on window close
     vim.api.nvim_create_autocmd('WinClosed', {
         group = state.augroup,
-        pattern = tostring(list_win),
-        once = true,
-        callback = function() vim.schedule(function() close_explorer(state) end) end,
+        callback = function(ev)
+            local w = tonumber(ev.match)
+            if w == list_win or w == source_win then
+                vim.schedule(function()
+                    if not state.closed and type(close_explorer) == 'function' then
+                        state.closed = true
+                        close_explorer(state)
+                    end
+                end)
+            end
+        end,
     })
+
+    -- Open the rail at the source's current position; keep the source cursor untouched
+    state.syncing = true
+    local source_lnum = vim.api.nvim_win_get_cursor(source_win)[1]
+    local source_topline = vim.api.nvim_win_call(source_win, function() return vim.fn.winsaveview().topline end)
+    vim.api.nvim_win_call(list_win, function()
+        vim.fn.winrestview({ topline = source_topline, lnum = source_lnum })
+    end)
+    state.syncing = false
 end
 
 local function praise_current_line()
@@ -408,6 +475,23 @@ local function praise_current_line()
     print("Man, you're not in any repo")
 end
 
-vim.api.nvim_create_user_command('Praise', explorer, {})
-vim.api.nvim_create_user_command('PraiseThis', praise_current_line, {})
-vim.api.nvim_create_user_command('Blame', praise_current_line, {})
+vim.api.nvim_create_user_command('Blame', function(opts)
+    local arg = opts.args:lower()
+    if arg == "file" then
+        praise_current_file()
+    elseif arg == "line" or arg == '' then
+        praise_current_line()
+    else
+        vim.notify("unknown blame target: " .. arg, vim.log.levels.ERROR)
+    end
+end, {
+    nargs = '?',
+    complete = function(arg_lead, cmd_line, cursor_pos)
+        local subcommands = { 'line', 'file' }
+        return vim.tbl_filter(function(item)
+            return item:find(arg_lead, 1, true) == 1
+        end, subcommands)
+    end,
+    desc = "vsc blame"
+
+})
