@@ -6,7 +6,7 @@ vim.pack.add({ 'https://github.com/folke/snacks.nvim' })
 require("snacks").setup({
     dashboard = { enabled = false },
     bigfile = { enabled = false },
-    notifier = { enabled = true, timeout = 3000 },
+    notifier = { enabled = false },
     quickfile = { enabled = false },
     statuscolumn = { enabled = false },
     lazygit = { enabled = false },
@@ -17,3 +17,4 @@ require("snacks").setup({
 vim.keymap.set("n", "<leader>un", function()
     require("snacks").notifier.hide()
 end, { desc = "Dismiss All Notifications" })
+

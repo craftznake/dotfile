@@ -1,6 +1,6 @@
 # Register related knife commands
 if command -v knife >/dev/null 2>&1; then
-    eval "$(knife completion)"
+    eval "$(COMPLETE=zsh knife)"
 
     if [[ -f ~/.knife/shell/shell.zsh ]]; then
         zmodload zsh/stat
@@ -41,11 +41,9 @@ if command -v aws_completer >/dev/null 2>&1; then
     complete -C "$(where aws_completer)" aws
 fi
 
-
 if command -v acli >/dev/null 2>&1; then
     load_acli() {
         eval "$(acli completion zsh)"
         echo "acli completions loaded."
     }
 fi
-

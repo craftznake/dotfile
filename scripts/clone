@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+
+if [ "$#" -lt 1 ] || [ "$#" -gt 2 ]; then
+    echo "Usage: $0 <repository-link> [jj|git]"
+    exit 1
+fi
+
+standardize() {
+    url="$1"
+
+    # 1. Strip the protocol (http://, https://, ssh://, or git@)
+    url="${url#http://}"
+    url="${url#https://}"
+    url="${url#ssh://}"
+    url="${url#git@}"
+
+    # Convert SSH separator ':' to '/' so it parses exactly like an HTTP URL
+    url="${url/://}"
+
+    # 2. Split into domain and the rest of the path
+    domain="${url%%/*}"
+    path="${url#*/}"
+
+    # 3. Clean up query parameters, hash fragments, and trailing .git
+    path="${path%%\?*}"
+    path="${path%%#*}"
+    path="${path%.git}"
+
+    # 4. Extract the actual repo path based on the platform
+    if [[ "$domain" == *"github.com"* ]]; then
+        # GitHub is always domain.com/owner/repo
+        # We use IFS to grab exactly the first two segments
+        IFS=/ read -r owner repo _ <<<"$path"
+        repo_path="$owner/$repo"
+    else
+        # GitLab uses /-/ as the standard delimiter for UI paths
+        repo_path="${path%%/-/*}"
+    fi
+
+    # 5. Construct the final SSH URL
+    ssh_url="git@$domain:$repo_path.git"
+}
+
+# JJ is our default vcs engine if not provided
+link="$1"
+tool="${2:-jj}"
+
+standardize "$link"
+
+target_dir="$HOME/Projects/$domain/$repo_path"
+if [ -d "$target_dir" ]; then
+    echo "Repository already exists at: $target_dir"
+    exit 0
+fi
+
+mkdir -p "$(dirname "$target_dir")"
+if [ "$tool" = "jj" ]; then
+    echo "Cloning with jj: ${ssh_url} into ${target_dir}..."
+    jj git clone "$ssh_url" "$target_dir"
+elif [ "$tool" = "git" ]; then
+    echo "Cloning with git: ${ssh_url} into ${target_dir}..."
+    git clone "$ssh_url" "$target_dir"
+else
+    echo "Error: Unknown tool '$tool'. Please use 'jj' or 'git'."
+    exit 1
+fi
+
+echo ""
+echo "DONE"
+echo "$target_dir"

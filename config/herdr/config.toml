@@ -91,6 +91,13 @@ prompt_new_workspace_name = true
 show_agent_labels_on_pane_borders = true
 
 tab_bar_position = "top"
+tab_bar_right_separator = "  ·  "
+
+[[ui.tab_bar_right]]
+type = "command"
+command = "~/.local/bin/incident-status"
+interval_seconds = 60
+timeout_seconds = 6
 
 [[ui.tab_bar_right]]
 type = "datetime"

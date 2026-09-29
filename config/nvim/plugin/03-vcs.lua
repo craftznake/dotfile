@@ -50,6 +50,10 @@ local function relative_path(root, path)
     return normalized_path:sub(#prefix + 1)
 end
 
+local BLAME_WIDTH_PCT = 0.30 -- rail takes 30% of the blamed pane's width
+local BLAME_MAX_WIDTH = 60   -- but never wider than this many columns
+local BLAME_MIN_WIDTH = 20
+
 local function run(argv, cwd)
     local result = vim.system(argv, { cwd = cwd, text = true }):wait()
     if result.code ~= 0 then
@@ -105,7 +109,9 @@ end
 local function repo_for(path)
     path = real_path(path)
     local dir = vim.fs.dirname(path)
-    local root = run({ 'jj', '--repository', dir, 'root' }, dir)
+    -- jj first: in a git-colocated repo we want jj change ids, not git hashes.
+    -- `--repository` must point at the repo root, so detect via cwd instead.
+    local root = run({ 'jj', '--ignore-working-copy', 'root' }, dir)
     if root then
         root = vim.trim(root)
         if not is_absolute(root) then root = vim.fs.normalize(dir .. '/' .. root) end
@@ -138,7 +144,43 @@ local praise_colors = {
     '#d65d0e',
 }
 
-local function render_rail(kind, records, line_count)
+local function fit(text, max)
+    if max < 1 then return '' end
+    if vim.fn.strdisplaywidth(text) <= max then return text end
+    local out = text
+    repeat
+        out = vim.fn.strcharpart(out, 0, vim.fn.strchars(out) - 1)
+    until out == '' or vim.fn.strdisplaywidth(out) <= max - 1
+    return out .. '…'
+end
+
+-- Greedily flow `text` into rows of the given widths; the last row truncates.
+local function wrap_to_rows(text, widths)
+    local rows = {}
+    local remaining = vim.trim(text)
+    for i, w in ipairs(widths) do
+        if remaining == '' then break end
+        if i == #widths or vim.fn.strdisplaywidth(remaining) <= w then
+            rows[i] = fit(remaining, w)
+            remaining = ''
+        elseif w < 1 then
+            rows[i] = ''
+        else
+            local chunk = remaining
+            repeat
+                chunk = vim.fn.strcharpart(chunk, 0, vim.fn.strchars(chunk) - 1)
+            until chunk == '' or vim.fn.strdisplaywidth(chunk) <= w
+            -- Prefer breaking at the last space inside the chunk
+            local at_space = chunk:match('^(.*%S)%s%S*$')
+            if at_space then chunk = at_space end
+            rows[i] = chunk
+            remaining = vim.trim(remaining:sub(#chunk + 1))
+        end
+    end
+    return rows
+end
+
+local function render_rail(kind, records, line_count, width)
     local lines, blocks, color_indexes = {}, {}, {}
     local colors_by_id = {}
     local next_color_index = 0
@@ -164,18 +206,34 @@ local function render_rail(kind, records, line_count)
                     colors_by_id[group.id] = color_index
                     next_color_index = next_color_index + 1
                 end
-                blocks[#blocks + 1] = { start_row = line, group = group, color_index = color_index }
+                blocks[#blocks + 1] = { start_row = line, end_row = line, group = group, color_index = color_index }
             else
                 color_index = blocks[#blocks].color_index
+                blocks[#blocks].end_row = line
             end
             color_indexes[line] = color_index
-            if is_block_start then
-                local label = kind == 'jj' and group.id or group.id:sub(1, 12)
-                lines[line] = string.format('▌ %s  %s', label, group.summary or '(no description)')
-            else
-                lines[line] = '▌'
-            end
+            lines[line] = '▌'
             previous_id = group.id
+        end
+    end
+
+    -- Flow each block's summary across its own rows only; a 1-line block stays
+    -- 1 line (truncated), a taller block may continue onto its own rows.
+    for _, block in ipairs(blocks) do
+        local group = block.group
+        local label = kind == 'jj' and group.id:sub(1, 8) or group.id:sub(1, 12)
+        local head = string.format('▌ %s  ', label)
+        local cont = '▌   '
+        local widths = { width - vim.fn.strdisplaywidth(head) }
+        for i = 2, block.end_row - block.start_row + 1 do
+            widths[i] = width - vim.fn.strdisplaywidth(cont)
+        end
+        local segments = wrap_to_rows(group.summary or '(no description)', widths)
+        lines[block.start_row] = head .. (segments[1] or '')
+        for i = 2, #segments do
+            if segments[i] ~= '' then
+                lines[block.start_row + i - 1] = cont .. segments[i]
+            end
         end
     end
     return lines, blocks, color_indexes
@@ -230,13 +288,17 @@ local function praise_current_file()
 
     local source_win = vim.api.nvim_get_current_win()
     local source_line_count = vim.api.nvim_buf_line_count(source_buf)
+    local source_width = vim.api.nvim_win_get_width(source_win)
 
-    -- Create rail sidebar window
-    vim.cmd('topleft vertical new')
+    -- Create rail sidebar window just left of the blamed pane (A | blame | B)
+    vim.cmd('leftabove vertical new')
     local list_win, list_buf = vim.api.nvim_get_current_win(), vim.api.nvim_get_current_buf()
     set_scratch(list_buf, 'praise')
 
-    local list_lines, blocks, color_indexes = render_rail(kind, records, source_line_count)
+    local list_lines, blocks, color_indexes
+    local rail_width = math.floor(source_width * BLAME_WIDTH_PCT)
+    rail_width = math.max(BLAME_MIN_WIDTH, math.min(BLAME_MAX_WIDTH, rail_width))
+    list_lines, blocks, color_indexes = render_rail(kind, records, source_line_count, rail_width)
 
     vim.bo[list_buf].readonly = false
     vim.bo[list_buf].modifiable = true
@@ -248,7 +310,7 @@ local function praise_current_file()
     vim.wo[list_win].relativenumber = false
     vim.wo[list_win].signcolumn = 'no'
     vim.wo[list_win].wrap = false
-    vim.cmd('vertical resize 50')
+    vim.cmd('vertical resize ' .. rail_width)
 
     -- Restore focus to source window
     vim.api.nvim_set_current_win(source_win)
@@ -405,7 +467,8 @@ local function praise_current_file()
 
             vim.bo[list_buf].readonly = false
             vim.bo[list_buf].modifiable = true
-            list_lines, blocks, color_indexes = render_rail(kind, records, source_line_count)
+            list_lines, blocks, color_indexes = render_rail(kind, records, source_line_count,
+                vim.api.nvim_win_get_width(list_win))
             vim.api.nvim_buf_set_lines(list_buf, 0, -1, false, list_lines)
             vim.bo[list_buf].modifiable = false
             vim.bo[list_buf].readonly = true
@@ -441,38 +504,56 @@ local function praise_current_file()
 end
 
 local function praise_current_line()
-    local rel_file_path = vim.fn.shellescape(vim.fn.expand('%:.'))
-    local abs_file_dir = vim.fn.shellescape(vim.fn.expand('%:p:h'))
-    local file_name = vim.fn.shellescape(vim.fn.expand('%:t'))
+    local path = vim.api.nvim_buf_get_name(0)
+    if path == '' or vim.fn.filereadable(path) ~= 1 then
+        vim.notify('Praise requires a saved file on disk', vim.log.levels.WARN)
+        return
+    end
+
+    local kind, root = repo_for(path)
+    if not kind then
+        print("Man, you're not in any repo")
+        return
+    end
+
+    local relpath = relative_path(root, path)
+    if not relpath then
+        vim.notify('Praise: could not resolve file path in repository', vim.log.levels.ERROR)
+        return
+    end
+
     local line_num = tonumber(vim.fn.line('.'))
 
-    vim.fn.system('jj root --cwd ' .. abs_file_dir)
-    if vim.v.shell_error == 0 then
-        local jj_template = string.format("'if(self.line_number() == %d, self.commit().commit_id())'", line_num)
-        local cmd = string.format('jj file annotate %s -T %s', rel_file_path, jj_template)
-        local commit_id = vim.fn.trim(vim.fn.system(cmd))
-        if commit_id ~= '' then
-            local diff_cmd = string.format('jj diff -r %s', vim.fn.shellescape(commit_id))
-            show(vim.fn.systemlist(diff_cmd), 'diff')
+    if kind == 'jj' then
+        local template = string.format('if(self.line_number() == %d, self.commit().change_id())', line_num)
+        local output = run({ 'jj', '--repository', root, 'file', 'annotate', relpath, '-T', template }, root)
+        local change_id = output and vim.trim(output) or ''
+        if change_id ~= '' then
+            local diff = run({ 'jj', '--repository', root, 'diff', '-r', change_id }, root)
+            if diff then
+                show(split_lines(diff), 'diff')
+            else
+                print('Could not praise, failed to diff ' .. change_id)
+            end
         else
             print('Could not praise, changeID is empty')
         end
         return
     end
 
-    vim.fn.system('git -C ' .. abs_file_dir .. ' rev-parse --is-inside-work-tree')
-    if vim.v.shell_error == 0 then
-        local cmd = string.format('git -C %s blame -L %d,%d --porcelain %s', abs_file_dir, line_num, line_num, file_name)
-        local commit_id = vim.fn.system(cmd):match('^(%x+)')
-        if commit_id and not commit_id:match('^0+$') then
-            local diff_cmd = string.format('git -C %s show %s', abs_file_dir, commit_id)
-            show(vim.fn.systemlist(diff_cmd), 'diff')
+    local blame = run({ 'git', '-C', root, 'blame', '-L', line_num .. ',' .. line_num, '--porcelain', '--', relpath },
+        root)
+    local commit_id = blame and blame:match('^(%x+)')
+    if commit_id and not commit_id:match('^0+$') then
+        local diff = run({ 'git', '-C', root, 'show', commit_id }, root)
+        if diff then
+            show(split_lines(diff), 'diff')
         else
-            print('Could not praise, changeID is empty')
+            print('Could not praise, failed to show ' .. commit_id)
         end
-        return
+    else
+        print('Could not praise, changeID is empty')
     end
-    print("Man, you're not in any repo")
 end
 
 vim.api.nvim_create_user_command('Blame', function(opts)

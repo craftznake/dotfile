@@ -7,6 +7,7 @@ local new_paths=(
     "$HOME/.opencode/bin"
     "$HOME/.local/bin"
     "$(go env GOPATH 2>/dev/null)/bin"
+    "$HOME/.scripts"
 )
 
 # Only add paths if the directory exists
