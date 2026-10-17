@@ -35,6 +35,7 @@
       lima
       curl
       difftastic
+      luarocks
       direnv
       docker
       docker-compose

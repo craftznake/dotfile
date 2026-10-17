@@ -82,9 +82,8 @@ in
       recursive = true;
     };
     "zsh_plugins" = {
-      source = "${dotconfigs}/config/antidote-plugin.txt";
+      source = config.lib.file.mkOutOfStoreSymlink "${dotconfigs}/config/antidote-plugin.txt";
       target = ".zsh_plugins.txt";
-      recursive = true;
     };
     "starship" = {
       source = config.lib.file.mkOutOfStoreSymlink "${dotconfigs}/config/starship.toml";
