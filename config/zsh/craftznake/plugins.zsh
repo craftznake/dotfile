@@ -31,6 +31,7 @@ import 1.plugins.after/zsh-fast-syntax-highlighting.zsh
 # These only need to be ready once the first prompt has been drawn, so defer
 # them via zsh-defer (provided by the static plugins file sourced above).
 import 1.plugins.after/zsh-starship.zsh
-import 1.plugins.after/zsh-z.zsh
-import 1.plugins.after/zsh-history-substring-search.zsh
-import 1.plugins.after/zsh-craftznake.zsh
+zsh-defer import 1.plugins.after/zsh-fzf.zsh
+zsh-defer import 1.plugins.after/zsh-z.zsh
+zsh-defer import 1.plugins.after/zsh-history-substring-search.zsh
+zsh-defer import 1.plugins.after/zsh-craftznake.zsh
