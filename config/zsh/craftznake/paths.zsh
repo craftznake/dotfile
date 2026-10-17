@@ -6,7 +6,7 @@ local new_paths=(
     "$HOME/.cargo/bin"
     "$HOME/.opencode/bin"
     "$HOME/.local/bin"
-    "$(go env GOPATH 2>/dev/null)/bin"
+    "${GOPATH:-$(go env GOPATH 2>/dev/null)}/bin"
     "$HOME/.scripts"
 )
 

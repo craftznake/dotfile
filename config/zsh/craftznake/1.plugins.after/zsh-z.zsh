@@ -1,1 +1,5 @@
-eval "$(zoxide init --cmd cd zsh)"
+eval "$(zoxide init zsh)"
+
+function cd() {
+    __zoxide_z "$@"
+}

@@ -11,12 +11,13 @@ zsh_plugins=${ZDOTDIR:-~}/.zsh_plugins
 # Ensure the .zsh_plugins.txt file exists so you can add plugins.
 [[ -f ${zsh_plugins}.txt ]] || touch ${zsh_plugins}.txt
 
-fpath=($("/opt/homebrew/bin/brew" --prefix)/opt/antidote/share/antidote/functions $fpath)
-autoload -Uz antidote
-
-# Generate a new static file whenever .zsh_plugins.txt is updated.
+# Generate a new static file whenever .zsh_plugins.txt is updated. The antidote
+# function (and the `brew --prefix` lookup it needs) is only required on this
+# regeneration path, so keep it off the common startup path.
 if [[ ! ${zsh_plugins}.zsh -nt ${zsh_plugins}.txt ]]; then
-  antidote bundle <${zsh_plugins}.txt >|${zsh_plugins}.zsh
+    fpath=($("/opt/homebrew/bin/brew" --prefix)/opt/antidote/share/antidote/functions $fpath)
+    autoload -Uz antidote
+    antidote bundle <${zsh_plugins}.txt >|${zsh_plugins}.zsh
 fi
 
 # Source the static plugins file.
@@ -27,7 +28,8 @@ autoload -U select-word-style
 select-word-style bash
 
 import 1.plugins.after/zsh-fast-syntax-highlighting.zsh
-import 1.plugins.after/zsh-fzf.zsh
+# These only need to be ready once the first prompt has been drawn, so defer
+# them via zsh-defer (provided by the static plugins file sourced above).
 import 1.plugins.after/zsh-starship.zsh
 import 1.plugins.after/zsh-z.zsh
 import 1.plugins.after/zsh-history-substring-search.zsh
