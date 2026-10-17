@@ -68,3 +68,4 @@ require("lualine").setup({
 theme.register("lualine", function()
     require("lualine").setup({ options = { theme = theme.lualine_theme() } })
 end)
+

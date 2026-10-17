@@ -4,12 +4,14 @@ vim.pack.add({ 'https://github.com/mfussenegger/nvim-lint' })
 
 local lint = require("lint")
 lint.linters_by_ft = {
+    lua = { "luacheck" },
     sh = {},
     python = {},
     lua = {},
     markdown = {},
     text = {},
-    json = {},
+    json = { "jsonlint" },
+    yaml = { "yamllint" },
     zsh = {},
     go = { "golangcilint" },
 }
@@ -37,3 +39,4 @@ end, { desc = "List running linters" })
 vim.api.nvim_create_user_command("LintGrammar", function()
     require("lint").try_lint("write_good")
 end, { desc = "Lint grammar" })
+
