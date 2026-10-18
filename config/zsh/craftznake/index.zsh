@@ -33,4 +33,3 @@ fi
 if [[ -f "$HOME/secret/envs.zsh" ]]; then
     source "$HOME/secret/envs.zsh"
 fi
-

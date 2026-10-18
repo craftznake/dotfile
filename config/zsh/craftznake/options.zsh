@@ -36,3 +36,6 @@ else
   export EDITOR='nvim'
 fi
 
+
+# Do not highlight pasted text (default paste:standout looks like a cursor block)
+zle_highlight=(paste:none)
