@@ -5,7 +5,6 @@
 # Disabling flow control allows us to use Ctrl+S for forward search
 stty -ixon
 
-
 # hook function to be called after the plugin is loaded
 bindkey -M viins '^[[A' history-substring-search-up
 bindkey -M viins '^[[B' history-substring-search-down
@@ -19,3 +18,5 @@ HISTORY_SUBSTRING_SEARCH_ENSURE_UNIQUE=1
 HISTORY_SUBSTRING_SEARCH_HIGHLIGHT_FOUND='bg=magenta,fg=white,bold'
 HISTORY_SUBSTRING_SEARCH_HIGHLIGHT_NOT_FOUND='bg=red,fg=white,bold'
 HISTORY_SUBSTRING_SEARCH_GLOBBING_FLAGS='i'
+HISTORY_SUBSTRING_SEARCH_FUZZY='true'
+unset HISTORY_SUBSTRING_SEARCH_PREFIXED

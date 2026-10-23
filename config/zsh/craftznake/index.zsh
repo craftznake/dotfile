@@ -6,6 +6,10 @@ if [[ -f "$ZSH_ROOT/options.zsh" ]]; then
     source "$ZSH_ROOT/options.zsh"
 fi
 
+if [[ -f "$ZSH_ROOT/goto.zsh" ]]; then
+    source "$ZSH_ROOT/goto.zsh"
+fi
+
 if [[ -f "$ZSH_ROOT/paths.zsh" ]]; then
     source "$ZSH_ROOT/paths.zsh"
 fi

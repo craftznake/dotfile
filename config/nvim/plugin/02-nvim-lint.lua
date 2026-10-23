@@ -5,14 +5,8 @@ vim.pack.add({ 'https://github.com/mfussenegger/nvim-lint' })
 local lint = require("lint")
 lint.linters_by_ft = {
     lua = { "luacheck" },
-    sh = {},
-    python = {},
-    lua = {},
-    markdown = {},
-    text = {},
     json = { "jsonlint" },
     yaml = { "yamllint" },
-    zsh = {},
     go = { "golangcilint" },
 }
 

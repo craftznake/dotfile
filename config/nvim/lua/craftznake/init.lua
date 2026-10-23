@@ -1,8 +1,10 @@
+-- Mode must be resolved before options: set.lua branches on it.
+require("craftznake.plugins.mode").setup()
 require("craftznake.set")
 require("craftznake.remap")
 require("craftznake.theme").setup()
-require("craftznake.plugins.mode").setup()
 require("craftznake.packages")
+require("craftznake.commands.quote")
 
 local augroup = vim.api.nvim_create_augroup
 local autocmd = vim.api.nvim_create_autocmd

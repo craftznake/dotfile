@@ -80,10 +80,10 @@ function M.set(mode, opts)
             local session_file = vim.fn.stdpath("data") .. "/restart_session.vim"
 
             -- 2. save the current session
-            vim.cmd("mksession!" .. vim.fn.fnameescape(session_file))
+            vim.cmd("mksession! " .. vim.fn.fnameescape(session_file))
 
-            -- 3. Build the command to launch a new Neovim instance loading that session
-            vim.cmd('restart source ' .. vim.fn.fnameescape(session))
+            -- 3. Restart in place, reloading that session (0.12 `:restart source`)
+            vim.cmd("restart source " .. vim.fn.fnameescape(session_file))
         else
             vim.notify("Craftznake mode is already '" .. mode .. "'.", vim.log.levels.INFO)
         end

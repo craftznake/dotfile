@@ -47,16 +47,3 @@ keymap.set("n", "<leader>|", "<C-W>v", { desc = "Split Window Right", remap = tr
 keymap.set("n", "<leader><tab>o", "<cmd>tabonly<cr>", { desc = "Close Other Tabs" })
 -- tab
 keymap.set("n", "<leader><tab><tab>", "<cmd>tabnew<cr>", { desc = "New Tab" })
-
--- Version management commands
-keymap.set("n", "<leader>vv", function()
-    require("craftznake.scripts.version-manager").check_versions()
-end, { desc = "[V]ersion [V]erify" })
-
-keymap.set("n", "<leader>vr", function()
-    require("craftznake.scripts.version-manager").generate_report()
-end, { desc = "[V]ersion [R]eport" })
-
-keymap.set("n", "<leader>vu", function()
-    require("craftznake.scripts.version-manager").update_lockfile()
-end, { desc = "[V]ersion [U]pdate" })

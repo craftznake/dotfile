@@ -1,7 +1,6 @@
 if require("craftznake.plugins.mode").is_zen() then return end
 
 vim.pack.add({
-    'https://github.com/onsails/lspkind.nvim',
     'https://github.com/neovim/nvim-lspconfig',
     'https://github.com/mason-org/mason.nvim',
     'https://github.com/mason-org/mason-lspconfig.nvim',
@@ -235,11 +234,13 @@ blink.setup({
     sources = { default = { "lsp", "omni", "path", "snippets" } },
 })
 
--- Diagnostics keep running in the background, but nothing is drawn on screen:
+-- Diagnostics keep running in the background. Only a thin underline is drawn:
+-- no virtual text, no gutter signs, no undercurl.
 vim.diagnostic.config({
     virtual_text = false,
     signs = false,
-    underline = false,
+    underline = true,
+    severity_sort = true,
     update_in_insert = false,
     float = {
         focusable = true,
@@ -250,6 +251,20 @@ vim.diagnostic.config({
         prefix = "",
     },
 })
+
+local function apply_diagnostic_underlines()
+    local theme = require("craftznake.theme")
+    for _, severity in ipairs({ "Error", "Warn", "Info", "Hint" }) do
+        vim.api.nvim_set_hl(0, "DiagnosticUnderline" .. severity, {
+            undercurl = false,
+            underline = true,
+            sp = theme.get_hl("Diagnostic" .. severity).fg,
+        })
+    end
+end
+
+apply_diagnostic_underlines()
+require("craftznake.theme").register("diagnostics", apply_diagnostic_underlines)
 
 -- Pull diagnostics into the quickfix list on demand (diagnostics are always
 -- up to date since the LSP keeps computing them in the background).

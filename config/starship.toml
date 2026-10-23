@@ -12,12 +12,13 @@ $localip\
 $shlvl\
 $directory\
 $env_var\
-$custom\
+${custom.jj}\
 $cmd_duration\
 $container\
 $nix_shell\
 $shell\
 $status\
+${custom.kube}\
 $line_break\
 $character"""
 # $fill\ (before line_break)
@@ -74,10 +75,23 @@ disabled = true
 [docker_context]
 format = " [ $context](bold blue1) "
 
-[aws]
-format = "[⛈ $profile]($style)"
-symbol = ""
-force_display = false
+# kube: alias + short cluster + namespace for the pinned knife session.
+# KNIFE_ALIAS is set by `knife aws login`; the EKS ARN is collapsed to its
+# final path segment so the prompt shows `alias/cluster (namespace)`.
+[custom.kube]
+when = "command -v kubectl >/dev/null 2>&1"
+command = '''
+info=$(kubectl config view --minify -o jsonpath='{.current-context}{"|"}{..namespace}' 2>/dev/null) || exit 0
+[ -n "$info" ] || exit 0
+ctx=${info%%|*}
+ns=${info#*|}
+cluster=${ctx##*/}
+label=
+[ -n "$KNIFE_ALIAS" ] && label="$KNIFE_ALIAS/"
+printf '⎈ %s%s' "$label" "$cluster"
+if [ -n "$ns" ]; then printf ' (%s)' "$ns"; fi
+'''
+format = "[$output]($style)"
 
 [nix_shell]
 # symbol="""
