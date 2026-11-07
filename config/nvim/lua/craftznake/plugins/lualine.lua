@@ -1,11 +1,10 @@
-if require("craftznake.plugins.mode").is_zen() then return end
-
 vim.pack.add({
     'https://github.com/nvim-tree/nvim-web-devicons',
     'https://github.com/nvim-lualine/lualine.nvim',
 })
 
-local theme = require("craftznake.theme")
+
+local theme = require("craftznake.config.theme")
 
 local function location()
     return string.format("%3d:%-2d", unpack(vim.api.nvim_win_get_cursor(0)))
@@ -68,4 +67,3 @@ require("lualine").setup({
 theme.register("lualine", function()
     require("lualine").setup({ options = { theme = theme.lualine_theme() } })
 end)
-

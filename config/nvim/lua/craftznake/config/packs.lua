@@ -1,5 +1,5 @@
 -- Plugin hooks that must be registered before any vim.pack.add() call.
--- This file is required from init.lua, which runs before plugin/ files.
+-- Required from lua/craftznake/init.lua before the plugins/ specs are loaded.
 
 vim.api.nvim_create_autocmd("PackChanged", {
     callback = function(ev)

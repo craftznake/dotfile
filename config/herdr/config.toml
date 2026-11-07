@@ -73,6 +73,33 @@ type = "plugin_action"
 command = "herdr-navigator.open"
 description = "jump to anything"
 
+# A swap when a pane is in the way; at that edge the split is rebuilt along the
+# other axis instead.
+# See: scripts/pane-move.sh.
+[[keys.command]]
+key = "ctrl+shift+h"
+type = "shell"
+command = '"$HOME/dotfile/config/herdr/scripts/pane-move.sh" left'
+description = "move pane left"
+
+[[keys.command]]
+key = "ctrl+shift+j"
+type = "shell"
+command = '"$HOME/dotfile/config/herdr/scripts/pane-move.sh" down'
+description = "move pane down"
+
+[[keys.command]]
+key = "ctrl+shift+k"
+type = "shell"
+command = '"$HOME/dotfile/config/herdr/scripts/pane-move.sh" up'
+description = "move pane up"
+
+[[keys.command]]
+key = "ctrl+shift+l"
+type = "shell"
+command = '"$HOME/dotfile/config/herdr/scripts/pane-move.sh" right'
+description = "move pane right"
+
 [ui]
 sidebar_width = 26
 sidebar_min_width = 18

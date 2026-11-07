@@ -1,4 +1,4 @@
-if require("craftznake.plugins.mode").is_zen() then return end
+if require("craftznake.config.mode").is_zen() then return end
 
 vim.pack.add({ 'https://github.com/akinsho/bufferline.nvim' })
 

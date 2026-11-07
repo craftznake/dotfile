@@ -69,6 +69,7 @@
       protoc-gen-go-grpc
       python3
       ripgrep
+      shfmt
       starship
       terraform
       terraformer

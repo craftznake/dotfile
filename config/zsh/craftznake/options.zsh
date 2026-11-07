@@ -21,9 +21,7 @@ HIST_STAMPS="mm/dd/yyyy"
 setopt auto_cd
 setopt AUTO_PUSHD
 setopt EXTENDED_GLOB
-# compinit already runs in the Home-Manager-generated ~/.zshrc; only load
-# bashcompinit here (needed for `complete -C aws_completer`). Avoids a second
-# compinit + compaudit pass (~100ms).
+setopt INTERACTIVE_COMMENTS
 autoload bashcompinit && bashcompinit
 
 # Ignore duplicate entries in our history
@@ -31,11 +29,10 @@ setopt HIST_IGNORE_ALL_DUPS
 
 # Preferred editor for local and remote sessions
 if [[ -n $SSH_CONNECTION ]]; then
-  export EDITOR='vim'
+    export EDITOR='vim'
 else
-  export EDITOR='nvim'
+    export EDITOR='nvim'
 fi
-
 
 # Do not highlight pasted text (default paste:standout looks like a cursor block)
 zle_highlight=(paste:none)

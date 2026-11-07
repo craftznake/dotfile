@@ -1,4 +1,4 @@
-if require("craftznake.plugins.mode").is_zen() then return end
+if require("craftznake.config.mode").is_zen() then return end
 
 vim.pack.add({
     'https://github.com/neovim/nvim-lspconfig',
@@ -155,7 +155,7 @@ require("mason-lspconfig").setup({
     end },
 })
 
-local lsp_utils = require("craftznake.plugins.utils.lsp_utils")
+local lsp_utils = require("craftznake.util.lsp_utils")
 lsp_utils.setup()
 vim.keymap.set("n", "<leader>tl", lsp_utils.toggle_lsp, { desc = "[T]oggle [L]sps" })
 
@@ -234,8 +234,8 @@ blink.setup({
     sources = { default = { "lsp", "omni", "path", "snippets" } },
 })
 
--- Diagnostics keep running in the background. Only a thin underline is drawn:
--- no virtual text, no gutter signs, no undercurl.
+-- Diagnostics keep running in the background. Only an undercurl in the
+-- diagnostic color is drawn: no virtual text, no gutter signs.
 vim.diagnostic.config({
     virtual_text = false,
     signs = false,
@@ -253,18 +253,18 @@ vim.diagnostic.config({
 })
 
 local function apply_diagnostic_underlines()
-    local theme = require("craftznake.theme")
+    local theme = require("craftznake.config.theme")
     for _, severity in ipairs({ "Error", "Warn", "Info", "Hint" }) do
         vim.api.nvim_set_hl(0, "DiagnosticUnderline" .. severity, {
-            undercurl = false,
-            underline = true,
+            undercurl = true,
+            underline = false,
             sp = theme.get_hl("Diagnostic" .. severity).fg,
         })
     end
 end
 
 apply_diagnostic_underlines()
-require("craftznake.theme").register("diagnostics", apply_diagnostic_underlines)
+require("craftznake.config.theme").register("diagnostics", apply_diagnostic_underlines)
 
 -- Pull diagnostics into the quickfix list on demand (diagnostics are always
 -- up to date since the LSP keeps computing them in the background).

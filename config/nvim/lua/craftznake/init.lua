@@ -1,46 +1,26 @@
--- Mode must be resolved before options: set.lua branches on it.
-require("craftznake.plugins.mode").setup()
-require("craftznake.set")
-require("craftznake.remap")
-require("craftznake.theme").setup()
-require("craftznake.packages")
+-- Entry point for the craftznake config.
+--
+-- Everything below is load-order sensitive, so the order is written out
+-- explicitly instead of relying on filenames or alphabet:
+--
+--   mode     - options branch on zen/full, so it has to resolve first
+--   options  - mapleader and the rest, before any plugin is added
+--   keymaps  - global maps, before plugins register buffer-local ones
+--   autocmds - the augroups plugins hook into
+--   theme    - palette helpers that UI and LSP modules read
+--   packs    - the PackChanged hook, before the first vim.pack.add() call
+--   commands - user commands such as :Quote
+--   plugins  - the plugin specs themselves, each behind vim.pack.add()
+require("craftznake.config.mode").setup()
+require("craftznake.config.options")
+require("craftznake.config.keymaps")
+require("craftznake.config.autocmds")
+require("craftznake.config.theme").setup()
+require("craftznake.config.packs")
 require("craftznake.commands.quote")
+require("craftznake.plugins")
 
-local augroup = vim.api.nvim_create_augroup
-local autocmd = vim.api.nvim_create_autocmd
-
-local CraftznakeGroup = augroup("Craftznake", { clear = false })
-local YankGroup = augroup("HighlightYank", {})
-
-function R(name) require("plenary.reload").reload_module(name) end
-
--- Auto highlight next occur of yanked word
-autocmd({ "TextYankPost" }, {
-    group = YankGroup,
-    pattern = "*",
-    callback = function()
-        vim.hl.on_yank({
-            higroup = "IncSearch",
-            timeout = 40,
-        })
-    end,
-})
-
-autocmd("LspAttach", {
-    group = CraftznakeGroup,
-    callback = function(ev)
-        local map = function(mode, lhs, rhs, desc)
-            vim.keymap.set(mode, lhs, rhs, { buffer = ev.buf, desc = desc, silent = true })
-        end
-        map("n", "gd", vim.lsp.buf.definition, "[G]oto [D]efinition")
-        map("n", "gr", vim.lsp.buf.references, "[G]oto [R]eferences")
-        map("n", "gi", vim.lsp.buf.implementation, "[G]oto [I]mplementation")
-        map("n", "gc", vim.lsp.buf.code_action, "[G]oto [C]ode action")
-        map("n", "K", vim.lsp.buf.hover, "Hover Documentation")
-        map("i", "<c-k>", vim.lsp.buf.signature_help, "Signature Help")
-        map("n", "<leader>vrn", vim.lsp.buf.rename, "[R]e[n]ame")
-        map("n", "gl", vim.diagnostic.open_float, "Show Diagnostic")
-        map("n", "[d", function() vim.diagnostic.jump({ count = -1, float = true }) end, "Previous Diagnostic")
-        map("n", "]d", function() vim.diagnostic.jump({ count = 1, float = true }) end, "Next Diagnostic")
-    end,
-})
+-- Reload one of our modules in place, e.g. :lua R("craftznake.config.options")
+function R(name)
+    require("plenary.reload").reload_module(name)
+end

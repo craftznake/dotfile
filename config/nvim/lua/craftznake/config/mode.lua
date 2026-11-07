@@ -5,10 +5,10 @@
 --                        No LSP, no ruler/colorcolumn/signcolumn, no
 --                        statusline/tabline/notify plugins, etc.
 --   "full"             - the regular, fully-featured config (everything in
---                        plugin/*.lua).
+--                        lua/craftznake/plugins/).
 --
--- The mode is read very early (before plugin/*.lua files are auto-sourced)
--- so each plugin file can bail out early when mode == "zen".
+-- The mode is read very early (before the plugin specs are required) so each
+-- plugin module can bail out early when mode == "zen".
 --
 -- Commands:
 --   :ZendMode - switch to "zen" mode

@@ -8,20 +8,17 @@ palette = "gruvbox"
 format = """
 $username\
 $hostname\
-$localip\
-$shlvl\
 $directory\
-$env_var\
 ${custom.jj}\
 $cmd_duration\
-$container\
-$nix_shell\
-$shell\
 $status\
-${custom.kube}\
+$fill\ 
+$nix_shell\
+${custom.aws_ctx}\
+${custom.kube_ctx}\
 $line_break\
+${env_var.KNIFE_ALIAS}\
 $character"""
-# $fill\ (before line_break)
 # $all\
 # [╰─](bold green_bright)\
 
@@ -69,34 +66,35 @@ format = "[$status](bold red_base) "
 [sudo]
 disabled = true
 
-# right
-# ------------------------------------------
+[custom.aws_ctx]
+when = ''' test -n "$AWS_PROFILE" || test -n "$AWS_DEFAULT_PROFILE" '''
+command = '''
+aws_env="${AWS_PROFILE:-${AWS_DEFAULT_PROFILE:-}}"
+printf '%s' "$aws_env"
+'''
+# Using a yellow/orange color for AWS
+format = "[$output]($style) "
+style = "bold #ff9900"
 
-[docker_context]
-format = " [ $context](bold blue1) "
-
-# kube: alias + short cluster + namespace for the pinned knife session.
-# KNIFE_ALIAS is set by `knife aws login`; the EKS ARN is collapsed to its
-# final path segment so the prompt shows `alias/cluster (namespace)`.
-[custom.kube]
+# ctx: alias + short cluster + namespace for the pinned knife session.
+[custom.kube_ctx]
 when = "command -v kubectl >/dev/null 2>&1"
 command = '''
 info=$(kubectl config view --minify -o jsonpath='{.current-context}{"|"}{..namespace}' 2>/dev/null) || exit 0
 [ -n "$info" ] || exit 0
+
 ctx=${info%%|*}
 ns=${info#*|}
 cluster=${ctx##*/}
-label=
-[ -n "$KNIFE_ALIAS" ] && label="$KNIFE_ALIAS/"
-printf '⎈ %s%s' "$label" "$cluster"
-if [ -n "$ns" ]; then printf ' (%s)' "$ns"; fi
-'''
-format = "[$output]($style)"
 
-[nix_shell]
-# symbol="""
-format = "[ ${name}](bold white0_reduce_blue) "
-heuristic = true
+printf '⎈ %s' "$cluster"
+if [ -n "$ns" ]; then 
+    printf ' (%s)' "$ns"
+fi
+'''
+# Using a dimmed blue color for Kubernetes
+format = "[$output]($style) "
+style = "dimmed #326ce5"
 
 [custom.jj]
 when = "jj-starship detect"
@@ -111,6 +109,17 @@ shell = [
 ]
 symbol = ""
 format = "$output "
+
+[env_var.KNIFE_ALIAS]
+variable = "KNIFE_ALIAS"
+symbol = "0x "
+format = "[$symbol]($style)"
+style = "bold red"
+
+[nix_shell]
+# symbol="""
+format = "[ ${name}](bold white0_reduce_blue) "
+heuristic = true
 
 # Palette
 # ------------------------------------------

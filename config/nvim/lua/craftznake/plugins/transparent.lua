@@ -1,8 +1,8 @@
-if require("craftznake.plugins.mode").is_zen() then return end
+if require("craftznake.config.mode").is_zen() then return end
 
 vim.pack.add({ 'https://github.com/xiyaowong/transparent.nvim' })
 
-local theme = require("craftznake.theme")
+local theme = require("craftznake.config.theme")
 
 vim.keymap.set(
     "n",

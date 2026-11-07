@@ -1,5 +1,5 @@
 local M = {}
-local cache = require("craftznake.plugins.utils.cache")
+local cache = require("craftznake.util.cache")
 
 -- Constant
 local CACHE_NAMESPACE = "lsp_utils"

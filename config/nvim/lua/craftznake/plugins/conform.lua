@@ -1,8 +1,8 @@
-if require("craftznake.plugins.mode").is_zen() then return end
+if require("craftznake.config.mode").is_zen() then return end
 
 vim.pack.add({ 'https://github.com/stevearc/conform.nvim' })
 
-local cache = require("craftznake.plugins.utils.cache")
+local cache = require("craftznake.util.cache")
 local CACHE_NAMESPACE = "conform"
 local conform_enabled = cache.get_cached_value(CACHE_NAMESPACE, "conform", true)
 vim.g.conform_format = conform_enabled
@@ -21,6 +21,9 @@ require("conform").setup({
         javascriptreact = { "prettierd", "prettier", stop_after_first = true },
         typescript      = { "prettierd", "prettier", stop_after_first = true },
         typescriptreact = { "prettierd", "prettier", stop_after_first = true },
+        sh              = { "shfmt" },
+        bash            = { "shfmt" },
+        zsh             = { "shfmt" },
     },
     formatters = {
         prettierd = {

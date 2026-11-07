@@ -6,7 +6,7 @@ vim.pack.add({
 })
 
 local actions = require("telescope.actions")
-local theme = require("craftznake.theme")
+local theme = require("craftznake.config.theme")
 
 local function teleFilename(_, path)
     local tail = require("telescope.utils").path_tail(path)

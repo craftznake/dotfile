@@ -1,5 +1,8 @@
-vim.pack.add({ 'https://github.com/christoomey/vim-tmux-navigator' })
+-- No default maps: our own nav() maps below cover hjkl, and <C-\\> is mapped
+-- explicitly after add(). The guard must be set before vim.pack.add(), because
+-- add() sources the plugin's plugin/*.vim right away.
 vim.g.tmux_navigator_no_mappings = 1
+vim.pack.add({ 'https://github.com/christoomey/vim-tmux-navigator' })
 
 -- This is introduce in my transition time from tmux to herd
 local function nav(wincmd, dir)
@@ -37,6 +40,11 @@ map("<C-h>", "h", "left", "Navigate left (vim/rex/herdr)")
 map("<C-j>", "j", "down", "Navigate down (vim/rex/herdr)")
 map("<C-k>", "k", "up", "Navigate up (vim/rex/herdr)")
 map("<C-l>", "l", "right", "Navigate right (vim/rex/herdr)")
+
+-- The plugin's <C-\\> default, restored explicitly now that the defaults are
+-- suppressed.
+vim.keymap.set("n", "<C-Bslash>", "<cmd>silent TmuxNavigatePrevious<cr>",
+    { silent = true, noremap = true, desc = "Navigate previous (tmux)" })
 
 -- local smart_splits = require("smart-splits")
 -- smart_splits.setup({

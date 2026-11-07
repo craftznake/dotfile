@@ -73,7 +73,7 @@ vim.g.netrw_winsize = 25
 vim.g.lazyvim_check_order = false
 
 -- "Zen" mode: strip the extra visual component.
-if require("craftznake.plugins.mode").is_zen() then
+if require("craftznake.config.mode").is_zen() then
     vim.opt.ruler = false
     vim.opt.signcolumn = "no"
     vim.opt.colorcolumn = ""
@@ -89,5 +89,5 @@ end
 
 vim.opt.nu = true
 vim.opt.rnu = true
-require("craftznake.theme").register("cursorline", apply_cursorline)
+require("craftznake.config.theme").register("cursorline", apply_cursorline)
 apply_cursorline()
