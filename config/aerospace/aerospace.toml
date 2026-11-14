@@ -70,6 +70,7 @@ alt-w = "layout h_accordion"  # 'layout tabbed' in i3
 alt-e = "layout tiles"  # 'layout toggle split' in i3
 alt-shift-e = "layout horizontal vertical"  # rotate
 alt-shift-c = "reload-config"
+alt-shift-r = "exec-and-forget /bin/sh -c '$HOME/.config/aerospace/restore-workspaces.py'"  # Sort all windows back to their rule-defined workspaces
 alt-shift-t = "layout floating tiling"  # 'floating toggle' in i3
 alt-r = "mode resize"
 alt-f = "exec-and-forget aerospace list-windows --workspace focused --interactive --fzf | aerospace focus --window-id -"  # find window
@@ -146,6 +147,11 @@ run = "move-node-to-workspace T"  # mnemonics T - Terminal/Development stuffs
 if.app-id = "com.mitchellh.ghostty"
 # mnemonics T - Terminal/Development stuffs
 run = ["move-node-to-workspace T", "layout tiling"]
+
+[[on-window-detected]]
+if.app-id = "sh.rexa.Rexa"
+# mnemonics T - Terminal/Development stuffs
+run = "move-node-to-workspace T"
 
 [[on-window-detected]]
 if.app-id = "org.mozilla.firefox"

@@ -12,7 +12,7 @@ $directory\
 ${custom.jj}\
 $cmd_duration\
 $status\
-$fill\ 
+$fill\
 $nix_shell\
 ${custom.aws_ctx}\
 ${custom.kube_ctx}\
@@ -94,7 +94,7 @@ fi
 '''
 # Using a dimmed blue color for Kubernetes
 format = "[$output]($style) "
-style = "dimmed #326ce5"
+style = "#619DC6"
 
 [custom.jj]
 when = "jj-starship detect"
