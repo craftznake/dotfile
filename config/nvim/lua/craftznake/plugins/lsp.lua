@@ -68,7 +68,11 @@ local servers = {
                     globals = { "vim" }
                 },
                 workspace = {
-                    library = vim.api.nvim_get_runtime_file("", true),
+                    -- Only the Neovim runtime: it holds the `---@meta` stubs that
+                    -- define `vim`. Passing every runtime dir (all plugin dirs)
+                    -- floods lua_ls's preload budget, so `vim` ends up undefined
+                    -- in projects that are not the config itself.
+                    library = { vim.env.VIMRUNTIME },
                     checkThirdParty = false,
                 },
             },
@@ -268,12 +272,30 @@ require("craftznake.config.theme").register("diagnostics", apply_diagnostic_unde
 
 -- Pull diagnostics into the quickfix list on demand (diagnostics are always
 -- up to date since the LSP keeps computing them in the background).
+-- vim.diagnostic.setqflist() takes no `bufnr` -- it always lists every buffer --
+-- so the scoped variant rebuilds the items itself and follows the same
+-- "update the list with this title" pattern the core function uses.
+local function diag_qflist(title, bufnr)
+    local items = vim.diagnostic.toqflist(vim.diagnostic.get(bufnr))
+    local qf_id
+    for nr = 1, vim.fn.getqflist({ nr = "$" }).nr do
+        local list = vim.fn.getqflist({ nr = nr, id = 0, title = 0 })
+        if list.title == title then
+            qf_id = list.id
+            break
+        end
+    end
+    vim.fn.setqflist({}, qf_id and "u" or " ", { title = title, items = items, id = qf_id })
+    vim.cmd(("silent %dchistory"):format(vim.fn.getqflist({ id = qf_id, nr = 0 }).nr))
+    vim.cmd("botright cwindow")
+end
+
 vim.api.nvim_create_user_command("Diag", function()
-    vim.diagnostic.setqflist({ open = true, bufnr = 0, title = "Diagnostics (buffer)" })
+    diag_qflist("Diagnostics (buffer)", vim.api.nvim_get_current_buf())
 end, { desc = "Pull current buffer diagnostics into quickfix" })
 
 vim.api.nvim_create_user_command("DiagAll", function()
-    vim.diagnostic.setqflist({ open = true, title = "Diagnostics (all buffers)" })
+    diag_qflist("Diagnostics (all buffers)", nil)
 end, { desc = "Pull diagnostics for all buffers into quickfix" })
 
 -- <leader>x is the "diagnostics/quickfix" group (see 00-whichkey.lua)

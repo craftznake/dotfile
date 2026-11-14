@@ -92,6 +92,14 @@ local function apply_statusline()
     vim.api.nvim_set_hl(0, "WinSeparator", { bg = bg, fg = p.dim, cterm = {} })
 end
 
+local function apply_floats()
+    local p = M.palette()
+    local bg = p.transparent and "none" or p.bg
+    vim.api.nvim_set_hl(0, "NormalFloat", { bg = bg, fg = p.fg, cterm = {} })
+    vim.api.nvim_set_hl(0, "FloatBorder", { bg = bg, fg = p.border, cterm = {} })
+    vim.api.nvim_set_hl(0, "FloatTitle", { bg = bg, fg = p.fg, bold = true, cterm = {} })
+end
+
 function M.setup()
     local group = vim.api.nvim_create_augroup("CraftznakeTheme", { clear = true })
     vim.api.nvim_create_autocmd("ColorScheme", {
@@ -105,6 +113,8 @@ function M.setup()
     })
     M.register("statusline", apply_statusline)
     apply_statusline()
+    M.register("floats", apply_floats)
+    apply_floats()
 end
 
 return M

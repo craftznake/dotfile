@@ -1,8 +1,7 @@
 vim.g.mapleader = " "
-vim.opt.guicursor = "a:blinkon0-block"
+vim.opt.guicursor = "n-v-c-sm:block,i-ci-ve:ver25,r-cr-o:hor20,a:blinkon0"
 
--- vim.opt.nu = true
--- vim.opt.rnu = true
+vim.opt.nu = true
 vim.opt.mouse = "a"
 vim.opt.expandtab = true
 vim.opt.softtabstop = 4
@@ -29,6 +28,7 @@ vim.opt.incsearch = true
 
 vim.opt.termguicolors = true
 
+vim.opt.shortmess:append("I") -- disable intro splash in startup
 vim.opt.showmode = false
 vim.opt.scrolloff = 10
 vim.opt.colorcolumn = "80"
@@ -82,12 +82,11 @@ else
     vim.opt.signcolumn = "yes"
     vim.opt.colorcolumn = "80"
 end
-vim.opt.cursorline = true
+vim.opt.cursorline = false
+
+-- CursorLine's bg still feeds theme.palette().visual_bg, so keep it set.
 local function apply_cursorline()
     vim.api.nvim_set_hl(0, "CursorLine", { bg = "#3f2e21" })
 end
-
-vim.opt.nu = true
-vim.opt.rnu = true
 require("craftznake.config.theme").register("cursorline", apply_cursorline)
 apply_cursorline()
